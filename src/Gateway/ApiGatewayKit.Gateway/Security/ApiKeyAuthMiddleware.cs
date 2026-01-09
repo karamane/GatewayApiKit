@@ -169,7 +169,8 @@ public class ApiKeyAuthMiddleware
     }
 
     /// <summary>
-    /// API key'i SHA256 hash ile doÄŸrular
+    /// API key'i SHA256 hash veya plain text ile doğrular.
+    /// Development ortamında "plain:" prefix'i ile plain text key desteklenir.
     /// </summary>
     private bool ValidateApiKey(string apiKey, out AdminApiKey? matchedKey)
     {
@@ -177,14 +178,26 @@ public class ApiKeyAuthMiddleware
 
         // Gelen key'in hash'ini hesapla
         var keyHash = ComputeHash(apiKey);
-        var keyHashWithPrefix = $"sha256:{keyHash}";
 
         foreach (var configuredKey in _options.ApiKeys)
         {
-            // Hash karÅŸÄ±laÅŸtÄ±rmasÄ± (timing-safe)
             var storedHash = configuredKey.KeyHash;
 
-            // "sha256:" prefix'i varsa kaldÄ±r karÅŸÄ±laÅŸtÄ±rma iÃ§in
+            // "plain:" prefix'i varsa (sadece Development için) direkt karşılaştır
+            if (storedHash.StartsWith("plain:", StringComparison.OrdinalIgnoreCase))
+            {
+                var plainKey = storedHash[6..];
+                if (CryptographicOperations.FixedTimeEquals(
+                    Encoding.UTF8.GetBytes(apiKey),
+                    Encoding.UTF8.GetBytes(plainKey)))
+                {
+                    matchedKey = configuredKey;
+                    return true;
+                }
+                continue;
+            }
+
+            // "sha256:" prefix'i varsa kaldır karşılaştırma için
             if (storedHash.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase))
             {
                 storedHash = storedHash[7..];

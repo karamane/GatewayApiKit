@@ -1,4 +1,6 @@
-﻿namespace ApiGatewayKit.Gateway.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace ApiGatewayKit.Gateway.Configuration;
 
 /// <summary>
 /// Route tanımları - ocelot.json'dan parse edilir
@@ -84,47 +86,90 @@ public class ModuleSummary
 }
 
 /// <summary>
-/// Modül tanımları - Türkçe isimler ve açıklamalar
+/// Modül bilgisi
+/// </summary>
+public class ModuleInfo
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Modül tanımları provider - Config'den okur
+/// </summary>
+public interface IModuleDefinitionsProvider
+{
+    string GetModuleName(string moduleCode);
+    string GetModuleDescription(string moduleCode);
+    IReadOnlyDictionary<string, ModuleInfo> GetAllModules();
+}
+
+/// <summary>
+/// Modül tanımları provider implementasyonu - appsettings.json'dan okur
+/// </summary>
+public sealed class ModuleDefinitionsProvider : IModuleDefinitionsProvider
+{
+    private readonly IReadOnlyDictionary<string, ModuleInfo> _modules;
+
+    public ModuleDefinitionsProvider(IConfiguration configuration)
+    {
+        var moduleSection = configuration.GetSection("ModuleDefinitions");
+        var modules = new Dictionary<string, ModuleInfo>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var child in moduleSection.GetChildren())
+        {
+            var moduleCode = child.Key;
+            var name = child.GetValue<string>("Name") ?? moduleCode;
+            var description = child.GetValue<string>("Description") ?? string.Empty;
+
+            modules[moduleCode] = new ModuleInfo
+            {
+                Name = name,
+                Description = description
+            };
+        }
+
+        _modules = modules;
+    }
+
+    public string GetModuleName(string moduleCode)
+    {
+        return _modules.TryGetValue(moduleCode, out var info) ? info.Name : moduleCode;
+    }
+
+    public string GetModuleDescription(string moduleCode)
+    {
+        return _modules.TryGetValue(moduleCode, out var info) ? info.Description : string.Empty;
+    }
+
+    public IReadOnlyDictionary<string, ModuleInfo> GetAllModules()
+    {
+        return _modules;
+    }
+}
+
+/// <summary>
+/// Modül tanımları - Geriye uyumluluk için static accessor
+/// NOT: Yeni kodda IModuleDefinitionsProvider kullanın
 /// </summary>
 public static class ModuleDefinitions
 {
-    public static readonly Dictionary<string, (string Name, string Description)> Modules = new()
+    private static IModuleDefinitionsProvider? _provider;
+
+    /// <summary>
+    /// Provider'ı DI'dan set eder - Uygulama başlangıcında çağrılmalı
+    /// </summary>
+    public static void Initialize(IModuleDefinitionsProvider provider)
     {
-        ["Auth"] = ("Kimlik Doğrulama", "Giriş, oturum ve token işlemleri"),
-        ["Usage"] = ("Kullanım", "Kullanım geçmişi ve detayları"),
-        ["Bill"] = ("Fatura", "Fatura sorgulama, ödeme ve e-fatura işlemleri"),
-        ["Product"] = ("Ürün", "Ürün listeleme, detay ve UNICA işlemleri"),
-        ["Campaigns"] = ("Kampanyalar", "Kampanya listeleme ve katılım işlemleri"),
-        ["Packages"] = ("Paketler", "Paket listeleme, değişiklik ve TİVİBU işlemleri"),
-        ["PratikNet"] = ("Pratik Net", "Bağlantı sorunları, hız testi ve destek talepleri"),
-        ["Guest"] = ("Misafir", "Misafir girişi ve randevu işlemleri"),
-        ["Lead"] = ("Müşteri Adayı", "Müşteri adayı işlemleri"),
-        ["Subscriber"] = ("Abone", "Abone bilgileri ve topluluk işlemleri"),
-        ["Settings"] = ("Ayarlar", "Modem ve güvenlik ayarları"),
-        ["EndToEnd"] = ("Uçtan Uca", "Sipariş ve randevu işlemleri"),
-        ["Profile"] = ("Profil", "Kullanıcı profili ve geçmişi"),
-        ["Address"] = ("Adres", "İl, ilçe, mahalle ve sokak sorguları"),
-        ["Dashboard"] = ("Gösterge Paneli", "Ana sayfa ve özet bilgiler"),
-        ["Thk"] = ("THK", "Taksitli hız kampanyaları"),
-        ["Document"] = ("Doküman", "Belge gönderme ve alma işlemleri"),
-        ["Otp"] = ("OTP", "Tek kullanımlık şifre işlemleri"),
-        ["LineSuspension"] = ("Hat Askıya Alma", "Hat askıya alma ve iptal işlemleri"),
-        ["AutoPayment"] = ("Otomatik Ödeme", "Otomatik ödeme talimatı işlemleri"),
-        ["Flow"] = ("Akış", "İş akışı işlemleri"),
-        ["Features"] = ("Özellikler", "OVIT ve özel teklifler"),
-        ["BanaOzel"] = ("Bana Özel", "Promosyon kodları ve özel kampanyalar"),
-        ["Digitt"] = ("Dijital Teklifler", "Dijital teklifler"),
-        ["Image"] = ("Görsel", "Captcha ve görsel işlemleri"),
-        ["GenericMessages"] = ("Genel Mesajlar", "Sistem mesajları"),
-        ["Adid"] = ("ADID", "Reklam kimliği işlemleri")
-    };
+        _provider = provider;
+    }
 
     /// <summary>
     /// Modül kodundan Türkçe isim döndürür
     /// </summary>
     public static string GetModuleName(string moduleCode)
     {
-        return Modules.TryGetValue(moduleCode, out var info) ? info.Name : moduleCode;
+        return _provider?.GetModuleName(moduleCode) ?? moduleCode;
     }
 
     /// <summary>
@@ -132,8 +177,6 @@ public static class ModuleDefinitions
     /// </summary>
     public static string GetModuleDescription(string moduleCode)
     {
-        return Modules.TryGetValue(moduleCode, out var info) ? info.Description : string.Empty;
+        return _provider?.GetModuleDescription(moduleCode) ?? string.Empty;
     }
 }
-
-

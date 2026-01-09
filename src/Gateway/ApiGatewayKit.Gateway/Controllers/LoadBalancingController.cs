@@ -253,14 +253,13 @@ public sealed class LoadBalancingController : ControllerBase
         return list;
     }
 
-    [HttpPut("routes/{routeKey}/nodes")]
+    [HttpPut("routes/nodes")]
     [AdminPermission(AdminPermissions.Write)]
     public async Task<IActionResult> SetRouteNodeEnabled(
-        string routeKey,
         [FromBody] SetRouteNodeEnabledRequest? request,
         CancellationToken cancellationToken)
     {
-        Console.WriteLine($"[SetRouteNodeEnabled] Called with routeKey={routeKey}, request={System.Text.Json.JsonSerializer.Serialize(request)}");
+        Console.WriteLine($"[SetRouteNodeEnabled] Called with request={System.Text.Json.JsonSerializer.Serialize(request)}");
         
         if (request == null)
         {
@@ -268,10 +267,10 @@ public sealed class LoadBalancingController : ControllerBase
             return BadRequest(new { error = "BadRequest", message = "Request body is required." });
         }
 
-        string normalizedRouteKey = NormalizeIdOrNull(routeKey);
+        string normalizedRouteKey = NormalizeRouteKeyOrNull(request.RouteKey);
         if (normalizedRouteKey == string.Empty)
         {
-            Console.WriteLine($"[SetRouteNodeEnabled] Invalid routeKey: {routeKey}");
+            Console.WriteLine($"[SetRouteNodeEnabled] Invalid routeKey: {request.RouteKey}");
             return BadRequest(new { error = "BadRequest", message = "routeKey is invalid." });
         }
 
@@ -322,8 +321,12 @@ public sealed class LoadBalancingController : ControllerBase
 
         foreach (JsonElement route in routesElement.EnumerateArray())
         {
+            // Key veya UpstreamPathTemplate ile eşleşme yap
             string key = route.TryGetProperty("Key", out JsonElement keyEl) ? keyEl.GetString() ?? string.Empty : string.Empty;
-            if (string.Equals(key, routeKey, StringComparison.OrdinalIgnoreCase))
+            string upstreamPath = route.TryGetProperty("UpstreamPathTemplate", out JsonElement pathEl) ? pathEl.GetString() ?? string.Empty : string.Empty;
+            
+            if (string.Equals(key, routeKey, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(upstreamPath, routeKey, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -351,6 +354,34 @@ public sealed class LoadBalancingController : ControllerBase
         }
 
         return trimmed;
+    }
+
+    /// <summary>
+    /// Route key'leri normalize eder. Route key'ler path içerebilir.
+    /// </summary>
+    private static string NormalizeRouteKeyOrNull(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        string trimmed = value.Trim();
+
+        // URL decode (örn: %2F -> /)
+        string decoded = Uri.UnescapeDataString(trimmed);
+
+        foreach (char c in decoded)
+        {
+            // Route key'ler path içerebilir, bu yüzden / karakterine izin ver
+            bool ok = char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == '.' || c == '/';
+            if (!ok)
+            {
+                return string.Empty;
+            }
+        }
+
+        return decoded;
     }
 
     private async Task<object[]> BuildStatusesAsync(
@@ -393,6 +424,7 @@ public sealed class LoadBalancingController : ControllerBase
 
     public sealed class SetRouteNodeEnabledRequest
     {
+        public string RouteKey { get; set; } = string.Empty;
         public string Target { get; set; } = string.Empty;
         public string NodeId { get; set; } = string.Empty;
         public bool Enabled { get; set; }

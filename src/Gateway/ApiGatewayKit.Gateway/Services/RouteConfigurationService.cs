@@ -4,24 +4,24 @@ using ApiGatewayKit.Gateway.Configuration;
 namespace ApiGatewayKit.Gateway.Services;
 
 /// <summary>
-/// ocelot.json'dan route konfigÃ¼rasyonunu okur
-/// Admin panel iÃ§in modÃ¼l ve route bilgilerini saÄŸlar
+/// ocelot.json'dan route konfigürasyonunu okur
+/// Admin panel için modül ve route bilgilerini sağlar
 /// </summary>
 public interface IRouteConfigurationService
 {
     /// <summary>
-    /// TÃ¼m modÃ¼lleri ve route'larÄ±nÄ± dÃ¶ndÃ¼rÃ¼r
+    /// Tüm modülleri ve route'larını döndürür
     /// </summary>
     Task<List<ModuleSummary>> GetModulesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Feature flag durumlarÄ±nÄ± dÃ¶ndÃ¼rÃ¼r
+    /// Feature flag durumlarını döndürür
     /// </summary>
     Task<Dictionary<string, int>> GetFeatureFlagStatusAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
-/// Route konfigÃ¼rasyon servisi implementasyonu
+/// Route konfigürasyon servisi implementasyonu
 /// </summary>
 public class RouteConfigurationService : IRouteConfigurationService
 {
@@ -43,7 +43,7 @@ public class RouteConfigurationService : IRouteConfigurationService
     {
         var (routes, modulePercentages) = await LoadConfigurationFromOcelotAsync(cancellationToken);
 
-        // Route'larÄ± modÃ¼llere gÃ¶re grupla
+        // Route'ları modüllere göre grupla
         var moduleGroups = routes
             .GroupBy(r => r.Module)
             .Where(g => !string.IsNullOrEmpty(g.Key))
@@ -104,7 +104,7 @@ public class RouteConfigurationService : IRouteConfigurationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "ocelot.json FeatureManagement okuma hatasÄ±");
+            _logger.LogError(ex, "ocelot.json FeatureManagement okuma hatası");
         }
 
         return result;
@@ -115,7 +115,7 @@ public class RouteConfigurationService : IRouteConfigurationService
         var routes = new List<RouteDefinition>();
         var moduleFlags = await GetFeatureFlagStatusAsync(cancellationToken);
         
-        // flag name'den modÃ¼l kodunu Ã§Ä±kar (Auth_UseNew -> Auth)
+        // flag name'den modül kodunu çıkar (Auth_UseNew -> Auth)
         var modulePercentages = moduleFlags.ToDictionary(
             kvp => kvp.Key.Replace("_UseNew", ""), 
             kvp => kvp.Value);
@@ -128,27 +128,42 @@ public class RouteConfigurationService : IRouteConfigurationService
             var json = await File.ReadAllTextAsync(ocelotPath, cancellationToken);
             using var document = JsonDocument.Parse(json);
 
-            // 2. Route tanÄ±mlarÄ±nÄ± oku
+            // 2. Route tanımlarını oku
             if (document.RootElement.TryGetProperty("Routes", out var routesElement))
             {
                 foreach (var route in routesElement.EnumerateArray())
-                // ... (rest of the method stays same)
                 {
                     var key = route.TryGetProperty("Key", out var keyProp) ? keyProp.GetString() ?? "" : "";
                     var upstreamPath = route.GetProperty("UpstreamPathTemplate").GetString() ?? "";
                     var downstreamPath = route.GetProperty("DownstreamPathTemplate").GetString() ?? "";
                     var priority = route.TryGetProperty("Priority", out var priorityProp) ? priorityProp.GetInt32() : 10;
 
-                    // Metadata'dan override yÃ¼zdesini oku
+                    // Metadata'dan Module ve override yüzdesini oku
+                    string? metadataModule = null;
                     int? overridePct = null;
-                    if (route.TryGetProperty("Metadata", out var routeMetadata) &&
-                        routeMetadata.TryGetProperty("NewSystemPercentage", out var pctProp))
+                    
+                    if (route.TryGetProperty("Metadata", out var routeMetadata))
                     {
-                        if (pctProp.ValueKind == JsonValueKind.Number)
-                            overridePct = pctProp.GetInt32();
-                        else if (pctProp.ValueKind == JsonValueKind.String && int.TryParse(pctProp.GetString(), out var p))
-                            overridePct = p;
+                        // Öncelik 1: Metadata.Module (açıkça tanımlı)
+                        if (routeMetadata.TryGetProperty("Module", out var moduleProp))
+                        {
+                            metadataModule = moduleProp.GetString();
+                        }
+                        
+                        // Override yüzdesi
+                        if (routeMetadata.TryGetProperty("NewSystemPercentage", out var pctProp))
+                        {
+                            if (pctProp.ValueKind == JsonValueKind.Number)
+                                overridePct = pctProp.GetInt32();
+                            else if (pctProp.ValueKind == JsonValueKind.String && int.TryParse(pctProp.GetString(), out var p))
+                                overridePct = p;
+                        }
                     }
+
+                    // Modül belirleme: Metadata > Path Parsing (fallback)
+                    var moduleCode = !string.IsNullOrWhiteSpace(metadataModule) 
+                        ? metadataModule 
+                        : ExtractModuleFromPath(upstreamPath);
 
                     var methods = new List<string>();
                     if (route.TryGetProperty("UpstreamHttpMethod", out var methodsElement))
@@ -159,7 +174,6 @@ public class RouteConfigurationService : IRouteConfigurationService
                         }
                     }
 
-                    var moduleCode = ExtractModuleFromPath(upstreamPath);
                     if (key.StartsWith("catchall", StringComparison.OrdinalIgnoreCase)) continue;
 
                     routes.Add(new RouteDefinition
@@ -177,57 +191,94 @@ public class RouteConfigurationService : IRouteConfigurationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "ocelot.json okuma hatasÄ±");
+            _logger.LogError(ex, "ocelot.json okuma hatası");
         }
 
         return (routes, modulePercentages);
     }
 
-    private static string ExtractModuleFromPath(string path)
+    /// <summary>
+    /// Path'ten modül kodunu çıkarır - Config'deki pattern'leri kullanır
+    /// </summary>
+    private string ExtractModuleFromPath(string path)
     {
         var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0) return string.Empty;
 
-        // /moim/api/v1/internet/{module}/...
-        if (segments.Length >= 5 &&
-            segments[0].Equals("moim", StringComparison.OrdinalIgnoreCase))
+        // Config'den path pattern'lerini oku
+        var pathPatterns = _configuration.GetSection("ModuleParsing:PathPatterns").Get<List<PathPatternConfig>>() 
+            ?? new List<PathPatternConfig>();
+
+        foreach (var pattern in pathPatterns)
         {
-            return ToPascalCase(segments[4]);
+            if (string.IsNullOrWhiteSpace(pattern.Prefix)) continue;
+            
+            var prefixSegments = pattern.Prefix.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            
+            // Prefix match kontrolü
+            if (segments.Length > pattern.ModuleSegmentIndex && 
+                segments.Length >= prefixSegments.Length &&
+                MatchesPrefix(segments, prefixSegments))
+            {
+                var rawModule = segments[pattern.ModuleSegmentIndex];
+                return NormalizeModuleName(rawModule);
+            }
         }
 
-        // /api/{module}/...
-        if (segments.Length >= 2 &&
-            segments[0].Equals("api", StringComparison.OrdinalIgnoreCase))
-        {
-            return ToPascalCase(segments[1]);
-        }
-
+        // Hiçbir pattern eşleşmedi - boş döndür
         return string.Empty;
     }
 
-    private static string ToPascalCase(string input)
+    /// <summary>
+    /// Segment dizisinin prefix ile başlayıp başlamadığını kontrol eder
+    /// </summary>
+    private static bool MatchesPrefix(string[] segments, string[] prefixSegments)
+    {
+        for (int i = 0; i < prefixSegments.Length; i++)
+        {
+            if (!segments[i].Equals(prefixSegments[i], StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Modül adını normalize eder - Config'deki alias'ları kullanır
+    /// </summary>
+    private string NormalizeModuleName(string input)
     {
         if (string.IsNullOrEmpty(input)) return input;
 
-        // Ã–zel eÅŸleÅŸtirmeler
-        var mappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["billlimit"] = "Bill",
-            ["genericmessages"] = "GenericMessages",
-            ["linesuspension"] = "LineSuspension",
-            ["lineSuspension"] = "LineSuspension",
-            ["autopayment"] = "AutoPayment",
-            ["endtoend"] = "EndToEnd",
-            ["pratiknet"] = "PratikNet",
-            ["banaozel"] = "BanaOzel",
-            ["unicaoffer"] = "Product"
-        };
+        // Config'den alias'ları oku
+        var aliases = _configuration.GetSection("ModuleParsing:ModuleAliases")
+            .Get<Dictionary<string, string>>() ?? new Dictionary<string, string>();
 
-        if (mappings.TryGetValue(input, out var mapped))
+        // Alias varsa kullan
+        foreach (var alias in aliases)
         {
-            return mapped;
+            if (alias.Key.Equals(input, StringComparison.OrdinalIgnoreCase))
+            {
+                return alias.Value;
+            }
         }
 
+        // PascalCase'e çevir
         return char.ToUpperInvariant(input[0]) + input[1..].ToLowerInvariant();
     }
 }
 
+/// <summary>
+/// Path pattern konfigürasyonu
+/// </summary>
+public class PathPatternConfig
+{
+    /// <summary>
+    /// Path prefix'i (örn: "moim/api/v1/internet")
+    /// </summary>
+    public string Prefix { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Modül segment index'i (0-based)
+    /// </summary>
+    public int ModuleSegmentIndex { get; set; }
+}

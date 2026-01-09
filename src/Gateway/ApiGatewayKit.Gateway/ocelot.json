@@ -17,11 +17,10 @@
       "RouteIsCaseSensitive": false,
       "Priority": 10,
       "Metadata": {
+        "Module": "Auth",
         "NewSystemPercentage": 50,
         "DisabledNodes": {
-          "Legacy": [
-            "legacy-1"
-          ],
+          "Legacy": [],
           "New": []
         }
       }
@@ -43,7 +42,7 @@
       "RouteIsCaseSensitive": false,
       "Priority": 10,
       "Metadata": {
-        "NewSystemPercentage": 100,
+        "NewSystemPercentage": 50,
         "DisabledNodes": {
           "Legacy": [],
           "New": [
@@ -67,7 +66,17 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "DisabledNodes": {
+          "Legacy": [
+            "legacy-1"
+          ],
+          "New": [
+            "new-1"
+          ]
+        }
+      }
     },
     {
       "Key": "usage-history",
@@ -1000,7 +1009,16 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "DisabledNodes": {
+          "New": [
+            "new-1",
+            "new-2"
+          ],
+          "Legacy": []
+        }
+      }
     },
     {
       "Key": "packages-offer-detail-v2",
@@ -2073,7 +2091,16 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 0,
+        "DisabledNodes": {
+          "New": [
+            "new-1"
+          ],
+          "Legacy": []
+        }
+      }
     },
     {
       "Key": "address-districts",
@@ -2090,7 +2117,10 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 85
+      }
     },
     {
       "Key": "address-villages",
@@ -2127,7 +2157,10 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 0
+      }
     },
     {
       "Key": "address-streets",
@@ -2144,7 +2177,10 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 100
+      }
     },
     {
       "Key": "address-buildings",
@@ -2161,7 +2197,14 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 100,
+        "DisabledNodes": {
+          "New": [],
+          "Legacy": []
+        }
+      }
     },
     {
       "Key": "address-apartments",
@@ -2178,7 +2221,10 @@
         }
       ],
       "RouteIsCaseSensitive": false,
-      "Priority": 10
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 100
+      }
     },
     {
       "Key": "image-captcha",
@@ -2335,7 +2381,7 @@
         {
           "Name": "Percentage",
           "Parameters": {
-            "Value": 0
+            "Value": 80
           }
         }
       ]
@@ -2465,7 +2511,7 @@
         {
           "Name": "Percentage",
           "Parameters": {
-            "Value": 0
+            "Value": 70
           }
         }
       ]
@@ -2595,7 +2641,7 @@
         {
           "Name": "Percentage",
           "Parameters": {
-            "Value": 0
+            "Value": 100
           }
         }
       ]

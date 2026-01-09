@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Admin UI - Geliştirici Rehberi</title>
+    <style>
+        :root {
+            --primary: #1890ff;
+            --success: #52c41a;
+            --warning: #faad14;
+            --error: #ff4d4f;
+            --text: #333;
+            --text-secondary: #666;
+            --bg: #f5f5f5;
+            --card-bg: #fff;
+            --border: #e8e8e8;
+            --code-bg: #f6f8fa;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        
+        header {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        header p { opacity: 0.9; }
+        
+        nav {
+            background: var(--card-bg);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        nav h2 { color: #722ed1; margin-bottom: 15px; }
+        nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+        nav a {
+            color: #722ed1;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            background: #f9f0ff;
+            transition: all 0.2s;
+        }
+        nav a:hover { background: #722ed1; color: white; }
+        
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #722ed1;
+            border-bottom: 2px solid #722ed1;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        h3 { color: var(--text); margin: 25px 0 15px 0; }
+        h4 { color: var(--text-secondary); margin: 20px 0 10px 0; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin: 5px 0; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        th { background: var(--bg); font-weight: 600; }
+        tr:hover { background: #fafafa; }
+        
+        pre {
+            background: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid var(--border);
+        }
+        
+        code {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.9em;
+        }
+        
+        :not(pre) > code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #c41d7f;
+        }
+        
+        .tip {
+            background: #f9f0ff;
+            border-left: 4px solid #722ed1;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .warning {
+            background: #fffbe6;
+            border-left: 4px solid var(--warning);
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .file-tree {
+            background: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            font-family: monospace;
+            line-height: 1.8;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .badge-purple { background: #f9f0ff; color: #722ed1; }
+        .badge-blue { background: #e6f7ff; color: var(--primary); }
+        .badge-green { background: #f6ffed; color: var(--success); }
+        .badge-orange { background: #fff7e6; color: #d46b08; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .feature-card .icon { font-size: 2em; margin-bottom: 10px; }
+        .feature-card h4 { margin: 0 0 8px 0; color: #722ed1; }
+        .feature-card p { margin: 0; font-size: 0.9em; color: var(--text-secondary); }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚛️ Gateway Admin UI</h1>
+        <p>React + TypeScript Geliştirici Rehberi</p>
+    </header>
+    
+    <div class="container">
+        <nav>
+            <h2>📑 İçindekiler</h2>
+            <ul>
+                <li><a href="#kurulum">Kurulum</a></li>
+                <li><a href="#yapi">Proje Yapısı</a></li>
+                <li><a href="#sayfalar">Sayfalar</a></li>
+                <li><a href="#bilesenler">Bileşenler</a></li>
+                <li><a href="#api">API Entegrasyonu</a></li>
+                <li><a href="#yeni-sayfa">Yeni Sayfa Ekleme</a></li>
+                <li><a href="#deployment">Deployment</a></li>
+            </ul>
+        </nav>
+
+        <section id="kurulum">
+            <h2>1. Kurulum ve Başlatma</h2>
+            
+            <h3>Gereksinimler</h3>
+            <ul>
+                <li>Node.js 18+</li>
+                <li>npm veya pnpm</li>
+            </ul>
+            
+            <h3>Kurulum</h3>
+            <pre><code>cd gateway-admin-ui
+npm install</code></pre>
+            
+            <h3>Geliştirme Sunucusu</h3>
+            <pre><code>npm run dev</code></pre>
+            <p>Uygulama <code>http://localhost:3000</code> adresinde başlar.</p>
+            
+            <h3>Environment Variables</h3>
+            <table>
+                <tr><th>Değişken</th><th>Varsayılan</th><th>Açıklama</th></tr>
+                <tr><td><code>VITE_API_BASE_URL</code></td><td><code>http://localhost:53000</code></td><td>Gateway API adresi</td></tr>
+                <tr><td><code>VITE_DEV_SERVER_PORT</code></td><td><code>3000</code></td><td>Dev server portu</td></tr>
+            </table>
+            
+            <div class="tip">
+                <strong>💡 İpucu:</strong> <code>.env.local</code> dosyası oluşturarak varsayılanları değiştirebilirsiniz.
+            </div>
+        </section>
+
+        <section id="yapi">
+            <h2>2. Proje Yapısı</h2>
+            
+            <div class="file-tree">
+src/<br>
+├── <span class="badge badge-purple">features/</span> — Sayfa bileşenleri<br>
+│   ├── auth/           — Login, AuthContext<br>
+│   ├── routing/        — Routing Yönetimi<br>
+│   ├── load-balancing/ — Yük Dengeleme<br>
+│   └── system-health/  — Sistem Sağlığı<br>
+│<br>
+├── <span class="badge badge-blue">components/</span> — Ortak bileşenler<br>
+│   ├── ui/             — StatusDot, NodeToggle, PageHeader<br>
+│   └── layout/         — AppLayout, Sidebar<br>
+│<br>
+├── <span class="badge badge-green">services/</span> — API katmanı<br>
+│   ├── api.ts          — Axios instance<br>
+│   └── gatewayService.ts — API fonksiyonları<br>
+│<br>
+├── <span class="badge badge-orange">hooks/</span> — React Query hooks<br>
+│   └── useApi.ts       — Veri çekme/mutasyon<br>
+│<br>
+├── types/              — TypeScript tipleri<br>
+├── App.tsx             — Router tanımları<br>
+├── main.tsx            — Uygulama başlangıcı<br>
+└── index.css           — Global stiller
+            </div>
+        </section>
+
+        <section id="sayfalar">
+            <h2>3. Sayfalar</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">🔐</div>
+                    <h4>Login</h4>
+                    <p>API Key ile giriş<br><code>features/auth/</code></p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🔀</div>
+                    <h4>Routing Yönetimi</h4>
+                    <p>Modül ve endpoint yüzdeleri<br><code>features/routing/</code></p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">⚖️</div>
+                    <h4>Yük Dengeleme</h4>
+                    <p>Node yönetimi<br><code>features/load-balancing/</code></p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🏥</div>
+                    <h4>Sistem Sağlığı</h4>
+                    <p>Servis izleme<br><code>features/system-health/</code></p>
+                </div>
+            </div>
+            
+            <h3>Sayfa Dosya Yapısı</h3>
+            <table>
+                <tr><th>Dosya</th><th>Açıklama</th></tr>
+                <tr><td><code>*Page.tsx</code></td><td>Ana sayfa bileşeni</td></tr>
+                <tr><td><code>components/*.tsx</code></td><td>Sayfaya özel alt bileşenler</td></tr>
+                <tr><td><code>index.ts</code></td><td>Export dosyası</td></tr>
+            </table>
+        </section>
+
+        <section id="bilesenler">
+            <h2>4. Ortak Bileşenler</h2>
+            
+            <h3>UI Bileşenleri</h3>
+            <table>
+                <tr><th>Bileşen</th><th>Dosya</th><th>Kullanım</th></tr>
+                <tr>
+                    <td><code>StatusDot</code></td>
+                    <td><code>components/ui/StatusDot.tsx</code></td>
+                    <td>Yeşil/kırmızı durum göstergesi</td>
+                </tr>
+                <tr>
+                    <td><code>NodeToggle</code></td>
+                    <td><code>components/ui/NodeToggle.tsx</code></td>
+                    <td>Açma/kapama switch</td>
+                </tr>
+                <tr>
+                    <td><code>PageHeader</code></td>
+                    <td><code>components/ui/PageHeader.tsx</code></td>
+                    <td>Sayfa başlığı + yenile butonu</td>
+                </tr>
+                <tr>
+                    <td><code>DataTable</code></td>
+                    <td><code>components/ui/DataTable.tsx</code></td>
+                    <td>Türkçe lokalizasyonlu tablo</td>
+                </tr>
+                <tr>
+                    <td><code>ServiceCard</code></td>
+                    <td><code>components/ui/ServiceCard.tsx</code></td>
+                    <td>Servis durum kartı</td>
+                </tr>
+            </table>
+            
+            <h3>Kullanım Örneği</h3>
+            <pre><code>import { StatusDot, PageHeader } from '@components/ui';
+
+&lt;PageHeader 
+  title="Sayfa Başlığı" 
+  onRefresh={() => refetch()} 
+/&gt;
+
+&lt;StatusDot status={isOnline ? 'success' : 'error'} /&gt;</code></pre>
+        </section>
+
+        <section id="api">
+            <h2>5. API Entegrasyonu</h2>
+            
+            <h3>API Servisleri</h3>
+            <p><code>services/gatewayService.ts</code> dosyası tüm API çağrılarını içerir:</p>
+            
+            <table>
+                <tr><th>Fonksiyon</th><th>Endpoint</th><th>Açıklama</th></tr>
+                <tr><td><code>getNodes()</code></td><td><code>GET /nodes</code></td><td>Node listesi</td></tr>
+                <tr><td><code>getNodeStatus()</code></td><td><code>GET /nodes/status</code></td><td>Sağlık durumları</td></tr>
+                <tr><td><code>setNodeEnabled()</code></td><td><code>PUT /nodes/{id}/enabled</code></td><td>Node toggle</td></tr>
+                <tr><td><code>getModules()</code></td><td><code>GET /modules</code></td><td>Modül listesi</td></tr>
+                <tr><td><code>setModulePercentage()</code></td><td><code>PUT /modules/{code}/percentage</code></td><td>Yüzde ayarla</td></tr>
+                <tr><td><code>getSystemHealth()</code></td><td><code>GET /system-health</code></td><td>Sistem sağlığı</td></tr>
+            </table>
+            
+            <h3>React Query Hooks</h3>
+            <p><code>hooks/useApi.ts</code> dosyası veri çekme ve mutasyon hook'larını sağlar:</p>
+            
+            <pre><code>import { useModules, useSetModulePercentage } from '@hooks/useApi';
+
+// Veri çekme
+const { data, isLoading, refetch } = useModules();
+
+// Mutasyon
+const setPercentage = useSetModulePercentage();
+setPercentage.mutate({ moduleCode: 'Auth', percentage: 50 });</code></pre>
+            
+            <h3>Yeni API Endpoint Ekleme</h3>
+            <ol>
+                <li><strong>Tip tanımla</strong> (<code>types/*.ts</code>):
+                    <pre><code>export interface NewResponse { data: string; }</code></pre>
+                </li>
+                <li><strong>Servis fonksiyonu ekle</strong> (<code>gatewayService.ts</code>):
+                    <pre><code>export async function getNewData(): Promise&lt;NewResponse&gt; {
+  return (await api.get('/new-endpoint')).data;
+}</code></pre>
+                </li>
+                <li><strong>Hook ekle</strong> (<code>useApi.ts</code>):
+                    <pre><code>export function useNewData() {
+  return useQuery({ queryKey: ['newData'], queryFn: getNewData });
+}</code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section id="yeni-sayfa">
+            <h2>6. Yeni Sayfa Ekleme</h2>
+            
+            <h3>Adım 1: Feature Klasörü Oluştur</h3>
+            <pre><code>src/features/new-feature/
+├── NewFeaturePage.tsx
+├── components/
+│   └── FeatureTable.tsx
+└── index.ts</code></pre>
+            
+            <h3>Adım 2: Sayfa Bileşenini Yaz</h3>
+            <pre><code>// NewFeaturePage.tsx
+import React from 'react';
+import { PageHeader } from '@components/ui';
+import { useNewData } from '@hooks/useApi';
+
+export const NewFeaturePage: React.FC = () =&gt; {
+  const { data, isLoading, refetch } = useNewData();
+  
+  return (
+    &lt;div&gt;
+      &lt;PageHeader 
+        title="Yeni Özellik" 
+        onRefresh={() =&gt; refetch()} 
+      /&gt;
+      {/* İçerik */}
+    &lt;/div&gt;
+  );
+};</code></pre>
+            
+            <h3>Adım 3: Route Ekle (App.tsx)</h3>
+            <pre><code>&lt;Route path="/new-feature" element={&lt;NewFeaturePage /&gt;} /&gt;</code></pre>
+            
+            <h3>Adım 4: Menüye Ekle (Sidebar.tsx)</h3>
+            <pre><code>const menuItems = [
+  // ... mevcut items
+  { key: 'new-feature', icon: &lt;StarOutlined /&gt;, label: 'Yeni Özellik' },
+];</code></pre>
+        </section>
+
+        <section id="deployment">
+            <h2>7. Deployment</h2>
+            
+            <h3>Production Build</h3>
+            <pre><code>npm run build</code></pre>
+            <p>Çıktı: <code>dist/</code> klasörü</p>
+            
+            <h3>Gateway'e Entegrasyon</h3>
+            <pre><code># Windows
+xcopy /E /Y dist\* ..\src\Gateway\ApiGatewayKit.Gateway\wwwroot\admin\
+
+# Linux/Mac
+cp -r dist/* ../src/Gateway/ApiGatewayKit.Gateway/wwwroot/admin/</code></pre>
+            
+            <h3>Standalone Deployment</h3>
+            <p>Herhangi bir statik dosya sunucusuyla (nginx, Apache, Caddy) sunulabilir:</p>
+            <pre><code># nginx örneği
+server {
+    listen 80;
+    root /var/www/admin-ui;
+    
+    location /api {
+        proxy_pass http://gateway:53000;
+    }
+    
+    location / {
+        try_files $uri /index.html;
+    }
+}</code></pre>
+            
+            <div class="warning">
+                <strong>⚠️ Dikkat:</strong> Production'da <code>VITE_API_BASE_URL</code>'i doğru ayarlayın veya proxy kullanın.
+            </div>
+        </section>
+
+        <section>
+            <h2>8. Teknoloji Stack</h2>
+            
+            <table>
+                <tr><th>Teknoloji</th><th>Versiyon</th><th>Kullanım</th></tr>
+                <tr><td>React</td><td>18.x</td><td>UI Framework</td></tr>
+                <tr><td>TypeScript</td><td>5.x</td><td>Type Safety</td></tr>
+                <tr><td>Vite</td><td>5.x</td><td>Build Tool</td></tr>
+                <tr><td>React Router</td><td>6.x</td><td>Client-side Routing</td></tr>
+                <tr><td>React Query</td><td>5.x</td><td>Server State</td></tr>
+                <tr><td>Ant Design</td><td>5.x</td><td>UI Components</td></tr>
+                <tr><td>Axios</td><td>1.x</td><td>HTTP Client</td></tr>
+            </table>
+        </section>
+        
+        <footer>
+            <p>Gateway Admin UI - Geliştirici Rehberi</p>
+            <p>Son güncelleme: Ocak 2026</p>
+        </footer>
+    </div>
+</body>
+</html>

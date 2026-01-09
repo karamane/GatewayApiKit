@@ -19,17 +19,20 @@ public class AdminController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly ILogger<AdminController> _logger;
     private readonly IWebHostEnvironment _environment;
+    private readonly IModuleDefinitionsProvider _moduleDefinitionsProvider;
 
     public AdminController(
         IRouteConfigurationService routeService,
         IConfiguration configuration,
         ILogger<AdminController> logger,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        IModuleDefinitionsProvider moduleDefinitionsProvider)
     {
         _routeService = routeService;
         _configuration = configuration;
         _logger = logger;
         _environment = environment;
+        _moduleDefinitionsProvider = moduleDefinitionsProvider;
     }
 
     /// <summary>
@@ -206,9 +209,10 @@ public class AdminController : ControllerBase
     [AdminPermission(AdminPermissions.Read)]
     public IActionResult GetModuleDefinitions()
     {
+        var allModules = _moduleDefinitionsProvider.GetAllModules();
         return Ok(new
         {
-            Moduller = ModuleDefinitions.Modules.Select(m => new
+            Moduller = allModules.Select(m => new
             {
                 Kod = m.Key,
                 Ad = m.Value.Name,
@@ -290,6 +294,12 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> SetRouteOverride([FromBody] RouteOverrideRequest? request, CancellationToken cancellationToken)
     {
         if (request == null || string.IsNullOrEmpty(request.Path)) return BadRequest("Path gerekli");
+
+        // Yüzde değerini 0-100 arasında sınırla
+        if (request.Percentage.HasValue && (request.Percentage.Value < 0 || request.Percentage.Value > 100))
+        {
+            return BadRequest("Yüzde değeri 0-100 arasında olmalıdır");
+        }
 
         try
         {

@@ -222,8 +222,12 @@ public sealed class OcelotRouteNodeOverrideProvider : IRouteNodeOverrideProvider
                 continue;
             }
 
+            // Key veya UpstreamPathTemplate ile eşleşme yap
             string? key = route["Key"]?.ToString();
-            if (string.Equals(key, routeKey, StringComparison.OrdinalIgnoreCase))
+            string? upstreamPath = route["UpstreamPathTemplate"]?.ToString();
+            
+            if (string.Equals(key, routeKey, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(upstreamPath, routeKey, StringComparison.OrdinalIgnoreCase))
             {
                 return route;
             }

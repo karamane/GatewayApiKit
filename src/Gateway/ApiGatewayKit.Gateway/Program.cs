@@ -39,6 +39,7 @@ builder.Services.AddSingleton<IGatewayTargetsProvider>(sp => sp.GetRequiredServi
 builder.Services.AddSingleton<IRouteNodeOverrideProvider, OcelotRouteNodeOverrideProvider>();
 builder.Services.AddSingleton<ITargetNodeSelector, TargetNodeSelector>();
 builder.Services.AddSingleton<IGatewayNodeHealthChecker, GatewayNodeHealthChecker>();
+builder.Services.AddSingleton<IModuleDefinitionsProvider, ModuleDefinitionsProvider>();
 
 // Downstream Health Monitoring
 builder.Services.Configure<DownstreamWatcherOptions>(builder.Configuration.GetSection("DownstreamWatcher"));
@@ -68,7 +69,17 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt => opt.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "ApiGatewayKit Gateway", Version = "v1" }));
-builder.Services.AddCors(opt => opt.AddPolicy("AdminPanel", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+// CORS for React Admin Panel - URL'ler config'den alınıyor
+var adminUiDevUrls = builder.Configuration.GetSection("AdminUI:DevServerUrls").Get<string[]>() ?? Array.Empty<string>();
+var adminUiProdUrl = builder.Configuration.GetValue<string>("AdminUI:ProductionUrl") ?? string.Empty;
+var allCorsOrigins = adminUiDevUrls.Concat(new[] { adminUiProdUrl }).Where(u => !string.IsNullOrWhiteSpace(u)).ToArray();
+
+builder.Services.AddCors(opt => opt.AddPolicy("AdminPanel", p => p
+    .WithOrigins(allCorsOrigins)
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()));
 builder.Services.AddHealthChecks();
 builder.Services.AddResponseCompression(opt => { opt.EnableForHttps = true; opt.Providers.Add<BrotliCompressionProvider>(); opt.Providers.Add<GzipCompressionProvider>(); });
 builder.Services.AddMemoryCache();
@@ -81,6 +92,9 @@ builder.Services.AddInMemoryRateLimiting();
 
 var app = builder.Build();
 
+// Modül tanımları provider'ını static accessor için initialize et
+ModuleDefinitions.Initialize(app.Services.GetRequiredService<IModuleDefinitionsProvider>());
+
 app.UseResponseCompression();
 app.UseIpRateLimiting();
 app.UseLogging();
@@ -91,8 +105,28 @@ app.UseCors("AdminPanel");
 app.UseAdminIpWhitelist();
 app.UseAdminApiKeyAuth();
 app.UseAdminRateLimit();
-app.UseDefaultFiles();
-app.UseStaticFiles();
+
+// Development: /admin -> React UI'a yönlendir, Production: statik dosyaları sun
+var adminRedirectUrl = app.Configuration.GetValue<string>("AdminUI:RedirectUrl") ?? "http://localhost:3000/admin";
+if (app.Environment.IsDevelopment())
+{
+    // /admin isteklerini React dev server'a yönlendir
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path.StartsWithSegments("/admin"))
+        {
+            context.Response.Redirect(adminRedirectUrl);
+            return;
+        }
+        await next();
+    });
+}
+else
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+}
+
 app.UseRouting();
 
 app.UseEndpoints(endpoints => {
@@ -139,7 +173,15 @@ static void PrintStartupBanner(WebApplication app) {
         Console.ResetColor();
     }
     Console.ForegroundColor = ConsoleColor.Magenta;
-    Console.WriteLine("  * Admin Panel    : /admin                                 ");
+    var adminPanelUrl = app.Configuration.GetValue<string>("AdminUI:RedirectUrl") ?? "/admin";
+    if (app.Environment.IsDevelopment())
+    {
+        Console.WriteLine($"  * Admin Panel    : {adminPanelUrl,-38} ");
+    }
+    else
+    {
+        Console.WriteLine("  * Admin Panel    : /admin                                 ");
+    }
     Console.ResetColor();
     Console.ForegroundColor = ConsoleColor.Cyan;
     Console.WriteLine("                                                            ");

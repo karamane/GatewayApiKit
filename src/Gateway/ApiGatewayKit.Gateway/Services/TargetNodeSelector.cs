@@ -1,5 +1,7 @@
 using ApiGatewayKit.Core.Application.Interfaces.Routing;
 using ApiGatewayKit.Core.Application.Models.Routing;
+using ApiGatewayKit.Gateway.Services.DownstreamHealth;
+using Microsoft.Extensions.Logging;
 
 namespace ApiGatewayKit.Gateway.Services;
 
@@ -7,11 +9,19 @@ public sealed class TargetNodeSelector : ITargetNodeSelector
 {
     private readonly IGatewayTargetsProvider _targetsProvider;
     private readonly IRouteNodeOverrideProvider _overrideProvider;
+    private readonly ISystemStatusRegistry _statusRegistry;
+    private readonly ILogger<TargetNodeSelector> _logger;
 
-    public TargetNodeSelector(IGatewayTargetsProvider targetsProvider, IRouteNodeOverrideProvider overrideProvider)
+    public TargetNodeSelector(
+        IGatewayTargetsProvider targetsProvider, 
+        IRouteNodeOverrideProvider overrideProvider,
+        ISystemStatusRegistry statusRegistry,
+        ILogger<TargetNodeSelector> logger)
     {
         _targetsProvider = targetsProvider;
         _overrideProvider = overrideProvider;
+        _statusRegistry = statusRegistry;
+        _logger = logger;
     }
 
     public async Task<GatewayTargetNode> SelectNodeAsync(
@@ -33,17 +43,53 @@ public sealed class TargetNodeSelector : ITargetNodeSelector
 
         HashSet<string> disabled = await GetDisabledSetAsync(target, routeKey, cancellationToken);
 
-        List<GatewayTargetNode> effectiveEnabled = nodes
+        // Önce enabled ve disabled olmayan node'ları filtrele
+        List<GatewayTargetNode> enabledNodes = nodes
             .Where(n => n.Enabled && !disabled.Contains(n.Id))
             .ToList();
 
-        if (effectiveEnabled.Count == 0)
+        if (enabledNodes.Count == 0)
         {
             string routeInfo = !string.IsNullOrWhiteSpace(routeKey) ? routeKey : upstreamPath ?? "unknown";
             throw new InvalidOperationException($"No effective enabled nodes for target '{target}' (route: {routeInfo}).");
         }
 
-        return SelectWeightedRandom(effectiveEnabled);
+        // Sağlıklı node'ları filtrele
+        List<GatewayTargetNode> healthyNodes = enabledNodes
+            .Where(n => IsNodeHealthy(n.Id))
+            .ToList();
+
+        // Sağlıklı node varsa onlardan seç, yoksa enabled node'lardan seç (graceful degradation)
+        if (healthyNodes.Count > 0)
+        {
+            return SelectWeightedRandom(healthyNodes);
+        }
+        
+        // Sağlıklı node yoksa, enabled node'lardan seç ve uyarı logla
+        _logger.LogWarning(
+            "Sağlıklı node bulunamadı, enabled node'lardan seçiliyor. Target: {Target}, Route: {Route}, EnabledNodes: {EnabledNodes}",
+            target,
+            routeKey ?? upstreamPath ?? "unknown",
+            string.Join(", ", enabledNodes.Select(n => n.Id)));
+
+        return SelectWeightedRandom(enabledNodes);
+    }
+
+    /// <summary>
+    /// Node'un sağlık durumunu kontrol eder.
+    /// Eğer henüz kontrol yapılmadıysa (uygulama yeni başladıysa) sağlıklı kabul eder.
+    /// </summary>
+    private bool IsNodeHealthy(string nodeId)
+    {
+        var status = _statusRegistry.GetStatus(nodeId);
+        
+        // Henüz sağlık kontrolü yapılmadıysa (uygulama yeni başladı), sağlıklı kabul et
+        if (status == null)
+        {
+            return true;
+        }
+
+        return status.IsOnline;
     }
 
     private async Task<HashSet<string>> GetDisabledSetAsync(TargetSystem target, string? routeKey, CancellationToken cancellationToken)
