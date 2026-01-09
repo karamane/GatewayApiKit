@@ -17,6 +17,12 @@
           "BaseUrl": "https://localhost:52201",
           "Enabled": true,
           "Weight": 100
+        },
+        {
+          "Id": "new-2",
+          "BaseUrl": "https://localhost:52206",
+          "Enabled": true,
+          "Weight": 100
         }
       ]
     }

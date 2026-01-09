@@ -9,6 +9,7 @@ using ApiGatewayKit.Gateway.Configuration;
 using ApiGatewayKit.Gateway.Handlers;
 using ApiGatewayKit.Gateway.Security;
 using ApiGatewayKit.Gateway.Services;
+using ApiGatewayKit.Gateway.Services.DownstreamHealth;
 using ApiGatewayKit.Infrastructure.Logging.Extensions;
 using ApiGatewayKit.Core.Application.Interfaces.Routing;
 using Ocelot.DependencyInjection;
@@ -38,6 +39,20 @@ builder.Services.AddSingleton<IGatewayTargetsProvider>(sp => sp.GetRequiredServi
 builder.Services.AddSingleton<IRouteNodeOverrideProvider, OcelotRouteNodeOverrideProvider>();
 builder.Services.AddSingleton<ITargetNodeSelector, TargetNodeSelector>();
 builder.Services.AddSingleton<IGatewayNodeHealthChecker, GatewayNodeHealthChecker>();
+
+// Downstream Health Monitoring
+builder.Services.Configure<DownstreamWatcherOptions>(builder.Configuration.GetSection("DownstreamWatcher"));
+builder.Services.AddSingleton<ISystemStatusRegistry, SystemStatusRegistry>();
+builder.Services.AddSingleton<IDownstreamHealthChecker, DownstreamHealthChecker>();
+builder.Services.AddHostedService<DownstreamWatcherService>();
+
+// HttpClient for downstream health checks (tolerates SSL errors for legacy systems)
+builder.Services.AddHttpClient("DownstreamHealthCheck")
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+    });
+
 builder.Services.Configure<AdminSecurityOptions>(builder.Configuration.GetSection(AdminSecurityOptions.SectionName));
 builder.Services.AddScoped<AdminAuditActionFilter>();
 builder.Services.AddScoped<ProductionRestrictionFilter>();

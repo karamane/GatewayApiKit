@@ -801,6 +801,10 @@
                         <span>⚖️</span>
                         <span>Yük Dengeleme</span>
                     </button>
+                    <button id="menu-systemhealth" class="nav-item" onclick="switchView('systemhealth')">
+                        <span>🏥</span>
+                        <span>Sistem Sağlığı</span>
+                    </button>
                 </nav>
 
                 <div>
@@ -923,6 +927,103 @@
                             </div>
                             <div class="card-body expanded" style="display:block">
                                 <div id="lb-routes" style="padding: 16px; color: var(--text-muted);">Yükleniyor...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sistem Sağlığı Görünümü -->
+                    <div id="view-systemhealth" class="view hidden">
+                        <div class="info-box" id="system-health-alert" style="display:none; background: linear-gradient(135deg, #fef2f2, #fee2e2); border-color: #fca5a5;">
+                            <span class="info-box-icon">🚨</span>
+                            <div>
+                                <h4 style="color: #b91c1c;">Kritik Alarm!</h4>
+                                <p id="system-health-alert-text" style="color: #991b1b;">Bir veya daha fazla servis uzun süredir erişilemiyor.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <span class="info-box-icon">🏥</span>
+                            <div>
+                                <h4>Akıllı Sistem İzleme</h4>
+                                <p>Gateway, tüm downstream servisleri periyodik olarak kontrol eder ve gerçek zamanlı sağlık durumlarını raporlar.</p>
+                            </div>
+                        </div>
+
+                        <div class="status-cards" style="margin-top: 16px;">
+                            <div class="status-card">
+                                <div class="label">Toplam Servis</div>
+                                <div class="value" id="sh-total">-</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="label">Çevrimiçi</div>
+                                <div class="value healthy" id="sh-online">-</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="label">Çevrimdışı</div>
+                                <div class="value" id="sh-offline" style="color: var(--danger)">-</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="label">Son Güncelleme</div>
+                                <div class="value" id="sh-lastupdate" style="font-size: 12px;">-</div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-top: 16px;">
+                            <div class="card-header">
+                                <h3>Legacy Sistem Servisleri</h3>
+                                <span class="status-dot" id="sh-legacy-dot"></span>
+                            </div>
+                            <div class="card-body expanded" style="display:block">
+                                <table style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Servis ID</th>
+                                            <th>Base URL</th>
+                                            <th>Durum</th>
+                                            <th>Uygulama</th>
+                                            <th>Versiyon</th>
+                                            <th>Yanıt (ms)</th>
+                                            <th>Son Kontrol</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sh-legacy-tbody">
+                                        <tr><td colspan="7" style="padding:16px;color:var(--text-muted)">Yükleniyor...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-top: 16px;">
+                            <div class="card-header">
+                                <h3>Yeni Sistem Servisleri</h3>
+                                <span class="status-dot" id="sh-new-dot"></span>
+                            </div>
+                            <div class="card-body expanded" style="display:block">
+                                <table style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Servis ID</th>
+                                            <th>Base URL</th>
+                                            <th>Durum</th>
+                                            <th>Uygulama</th>
+                                            <th>Versiyon</th>
+                                            <th>Yanıt (ms)</th>
+                                            <th>Son Kontrol</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sh-new-tbody">
+                                        <tr><td colspan="7" style="padding:16px;color:var(--text-muted)">Yükleniyor...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-top: 16px;" id="sh-critical-card">
+                            <div class="card-header" style="background: linear-gradient(135deg, #fef2f2, #fee2e2);">
+                                <h3 style="color: #b91c1c;">🚨 Kritik Servisler</h3>
+                            </div>
+                            <div class="card-body expanded" style="display:block">
+                                <div id="sh-critical-list" style="padding: 16px; color: var(--text-muted);">Kritik durumda servis yok.</div>
                             </div>
                         </div>
                     </div>
@@ -1120,6 +1221,11 @@
                 renderLoadBalancing();
                 return;
             }
+
+            if (currentView === 'systemhealth') {
+                await loadSystemHealth();
+                return;
+            }
         }
 
         async function loadNodesAndRoutes() {
@@ -1179,9 +1285,11 @@
 
             document.getElementById('menu-routing').classList.toggle('active', view === 'routing');
             document.getElementById('menu-loadbalancing').classList.toggle('active', view === 'loadbalancing');
+            document.getElementById('menu-systemhealth').classList.toggle('active', view === 'systemhealth');
 
             document.getElementById('view-routing').classList.toggle('hidden', view !== 'routing');
             document.getElementById('view-loadbalancing').classList.toggle('hidden', view !== 'loadbalancing');
+            document.getElementById('view-systemhealth').classList.toggle('hidden', view !== 'systemhealth');
 
             if (refresh) {
                 loadData();
@@ -1914,6 +2022,157 @@
             }
         }
         
+        // =================== SYSTEM HEALTH FUNCTIONS ===================
+        
+        let cachedSystemHealth = null;
+
+        async function loadSystemHealth() {
+            try {
+                const apiKey = getStoredApiKey();
+                if (!apiKey) throw new Error('No API key');
+
+                const res = await fetch(`${API_BASE}/system-health`, {
+                    headers: { 'X-Admin-Api-Key': apiKey }
+                });
+
+                if (res.status === 401) throw new Error('Unauthorized');
+                if (!res.ok) {
+                    console.error('System health API error:', res.status);
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                cachedSystemHealth = await res.json();
+                console.log('System health loaded:', cachedSystemHealth);
+                renderSystemHealth();
+            } catch (err) {
+                console.error('loadSystemHealth failed:', err);
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    showToast(`Sistem sağlığı yükleme hatası: ${err.message}`, 'error');
+                }
+            }
+        }
+
+        function renderSystemHealth() {
+            if (!cachedSystemHealth) return;
+
+            const summary = cachedSystemHealth.Ozet || cachedSystemHealth.ozet || {};
+            const legacy = cachedSystemHealth.Legacy || cachedSystemHealth.legacy || [];
+            const yeni = cachedSystemHealth.Yeni || cachedSystemHealth.yeni || [];
+            const kritik = cachedSystemHealth.KritikServisler || cachedSystemHealth.kritikServisler || [];
+
+            // Özet kartları
+            document.getElementById('sh-total').textContent = summary.ToplamServis ?? summary.toplamServis ?? 0;
+            document.getElementById('sh-online').textContent = summary.CevrimiciServis ?? summary.cevrimiciServis ?? 0;
+            document.getElementById('sh-offline').textContent = summary.CevrimdisiServis ?? summary.cevrimdisiServis ?? 0;
+            
+            const lastUpdate = summary.SonGuncelleme ?? summary.sonGuncelleme;
+            if (lastUpdate) {
+                const date = new Date(lastUpdate);
+                document.getElementById('sh-lastupdate').textContent = date.toLocaleString('tr-TR');
+            }
+
+            // Kritik alarm
+            const hasAlerts = summary.KritikAlarmVar ?? summary.kritikAlarmVar ?? false;
+            const alertBox = document.getElementById('system-health-alert');
+            const criticalCard = document.getElementById('sh-critical-card');
+            
+            if (hasAlerts) {
+                alertBox.style.display = 'flex';
+                criticalCard.style.display = 'block';
+                document.getElementById('system-health-alert-text').textContent = 
+                    `${kritik.length} servis kritik durumda - acil müdahale gerekli!`;
+            } else {
+                alertBox.style.display = 'none';
+                criticalCard.style.display = 'none';
+            }
+
+            // Legacy/Yeni durum noktaları
+            const legacyHealthy = summary.LegacySaglikli ?? summary.legacySaglikli ?? false;
+            const newHealthy = summary.YeniSistemSaglikli ?? summary.yeniSistemSaglikli ?? false;
+            
+            document.getElementById('sh-legacy-dot').className = 'status-dot ' + (legacyHealthy ? 'ok' : 'off');
+            document.getElementById('sh-legacy-dot').title = legacyHealthy ? 'Legacy sistem sağlıklı' : 'Legacy sistem sorunlu';
+            document.getElementById('sh-new-dot').className = 'status-dot ' + (newHealthy ? 'ok' : 'off');
+            document.getElementById('sh-new-dot').title = newHealthy ? 'Yeni sistem sağlıklı' : 'Yeni sistem sorunlu';
+
+            // Servis tablolarını render et
+            renderHealthTable('sh-legacy-tbody', legacy);
+            renderHealthTable('sh-new-tbody', yeni);
+
+            // Kritik servisler listesi
+            if (kritik.length > 0) {
+                document.getElementById('sh-critical-list').innerHTML = kritik.map(s => {
+                    const id = s.ServisId || s.servisId || '';
+                    const url = s.BaseUrl || s.baseUrl || '';
+                    const hata = s.HataMesaji || s.hataMesaji || 'Bilinmiyor';
+                    const fail = s.ArdisikHataSayisi ?? s.ardisikHataSayisi ?? 0;
+                    return `<div style="padding: 8px; margin-bottom: 8px; background: #fff; border: 1px solid #fca5a5; border-radius: 8px;">
+                        <strong style="color:#b91c1c">${id}</strong> 
+                        <span style="color:#666; font-size:12px">(${url})</span>
+                        <div style="margin-top:4px; font-size:12px; color:#991b1b">
+                            ❌ ${fail} ardışık başarısız kontrol - ${hata}
+                        </div>
+                    </div>`;
+                }).join('');
+            } else {
+                document.getElementById('sh-critical-list').innerHTML = 
+                    '<div style="color: var(--success); font-weight: 500;">✅ Tüm servisler normal çalışıyor.</div>';
+            }
+        }
+
+        function renderHealthTable(tbodyId, services) {
+            const tbody = document.getElementById(tbodyId);
+            
+            if (!services || services.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;color:var(--text-muted)">Servis bulunamadı</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = services.map(s => {
+                const id = s.ServisId || s.servisId || '';
+                const url = s.BaseUrl || s.baseUrl || '';
+                const online = s.Cevrimici ?? s.cevrimici ?? false;
+                const durum = s.Durum || s.durum || '-';
+                const app = s.UygulamaKimligi || s.uygulamaKimligi || '-';
+                const ver = s.Versiyon || s.versiyon || '-';
+                const ms = s.YanitSuresiMs ?? s.yanitSuresiMs ?? '-';
+                const lastCheck = s.SonKontrol || s.sonKontrol;
+                const kritik = s.Kritik ?? s.kritik ?? false;
+                const hata = s.HataMesaji || s.hataMesaji || '';
+                
+                const lastCheckStr = lastCheck ? new Date(lastCheck).toLocaleTimeString('tr-TR') : '-';
+                const rowStyle = kritik ? 'background: #fef2f2;' : (online ? '' : 'background: #fffbeb;');
+                
+                // Tutarlı hint mesajları (Yük Dengeleme ekranıyla aynı)
+                let hintMessage;
+                if (online) {
+                    hintMessage = 'Sunucu hazır - trafik yönlendirilebilir';
+                } else if (hata) {
+                    hintMessage = hata;
+                } else {
+                    hintMessage = 'Sunucu erişilemiyor - trafik yönlendirilemiyor';
+                }
+                
+                const statusDot = online 
+                    ? `<span class="status-dot ok" title="${hintMessage}"></span>` 
+                    : `<span class="status-dot off" title="${hintMessage}"></span>`;
+                
+                const durumText = online 
+                    ? `<span style="color:var(--success)">${durum}</span>` 
+                    : `<span style="color:var(--danger)">${durum}</span>`;
+
+                return `<tr style="${rowStyle}">
+                    <td><strong>${id}</strong></td>
+                    <td style="font-family:monospace; font-size:12px; max-width:200px; overflow:hidden; text-overflow:ellipsis;" title="${url}">${url}</td>
+                    <td>${statusDot} ${durumText}</td>
+                    <td>${app}</td>
+                    <td>${ver}</td>
+                    <td style="text-align:right">${ms !== '-' ? ms + ' ms' : '-'}</td>
+                    <td>${lastCheckStr}</td>
+                </tr>`;
+            }).join('');
+        }
+
         // Toast bildirimi göster
         function showToast(message, type) {
             const toast = document.createElement('div');

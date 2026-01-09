@@ -20,7 +20,7 @@ public sealed class GatewayNodeHealthChecker : IGatewayNodeHealthChecker
     {
         if (!baseUrl.IsAbsoluteUri)
         {
-            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Erişilemiyor (geçersiz BaseUrl)");
+            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Sunucu erişilemiyor - geçersiz adres");
         }
 
         Uri probeUri = new(baseUrl, "/");
@@ -48,22 +48,23 @@ public sealed class GatewayNodeHealthChecker : IGatewayNodeHealthChecker
 
             int statusCode = (int)headResponse.StatusCode;
 
-            // Status code (403/404/405 vs.) readiness is still "reachable"; avoid leaking raw codes into UI hints.
-            return new NodeHealthResult(Ready: true, StatusCode: statusCode, Hint: "Sunucu hazır");
+            // 2xx/3xx/4xx = sunucu yanıt veriyor, yani ayakta
+            // 5xx = sunucu hatası ama yine de "erişilebilir"
+            return new NodeHealthResult(Ready: true, StatusCode: statusCode, Hint: "Sunucu hazır - trafik yönlendirilebilir");
         }
         catch (HttpRequestException ex)
         {
             _logger.LogDebug(ex, "Node probe failed for {ProbeUri}", probeUri);
-            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Erişilemiyor");
+            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Sunucu erişilemiyor - bağlantı hatası");
         }
         catch (TaskCanceledException)
         {
-            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Erişilemiyor (timeout)");
+            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Sunucu erişilemiyor - zaman aşımı");
         }
         catch (Exception ex)
         {
             _logger.LogDebug(ex, "Node probe failed for {ProbeUri}", probeUri);
-            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Erişilemiyor");
+            return new NodeHealthResult(Ready: false, StatusCode: null, Hint: "Sunucu erişilemiyor - beklenmeyen hata");
         }
     }
 }
