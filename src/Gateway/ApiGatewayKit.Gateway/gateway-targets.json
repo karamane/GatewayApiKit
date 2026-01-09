@@ -1,0 +1,24 @@
+{
+  "GatewayTargets": {
+    "Legacy": {
+      "Nodes": [
+        {
+          "Id": "legacy-1",
+          "BaseUrl": "http://localhost:39414",
+          "Enabled": true,
+          "Weight": 100
+        }
+      ]
+    },
+    "New": {
+      "Nodes": [
+        {
+          "Id": "new-1",
+          "BaseUrl": "https://localhost:52201",
+          "Enabled": true,
+          "Weight": 100
+        }
+      ]
+    }
+  }
+}

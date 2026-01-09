@@ -1,0 +1,2604 @@
+{
+  "Routes": [
+    {
+      "Key": "auth-login",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/auth/login",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 50,
+        "DisabledNodes": {
+          "Legacy": [
+            "legacy-1"
+          ],
+          "New": []
+        }
+      }
+    },
+    {
+      "Key": "auth-login-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/auth/login/v2",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/auth/login/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 100,
+        "DisabledNodes": {
+          "Legacy": [],
+          "New": [
+            "new-1"
+          ]
+        }
+      }
+    },
+    {
+      "Key": "auth-login-v3",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/auth/login/v3",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/auth/login/v3",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "usage-history",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/usage/history",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/usage/history",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "usage-history-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/usage/history/v2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/usage/history/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "usage-list",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/usage/list",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/usage/list",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-current",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/current",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill/current",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-unpaid",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/unpaid",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill/unpaid",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-unpaid-other",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/unpaidOther",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill/unpaid-other",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-pay-debt",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/payDebt",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill/pay-debt",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-pay-debt-other",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/payDebtOther",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill/pay-debt-other",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-ebill",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/ebill",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill/ebill",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-itemized-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/itemizedDetailBill",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill/itemized-detail",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-pdf",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/pdf/{everything}",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/bill/pdf/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/bill/{id}",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/bill/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "bill-limit-info",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/billLimit/info",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill-limit/info",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bill-limit-fus",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/billLimit/fusLimits",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bill-limit/fus-limits",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "generic-messages",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/genericMessages/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/generic-messages/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "product-type-list",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/type/list",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/type/list",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-commitment",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/commitment",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/commitment",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-info",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/info",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/info",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-customer",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/customer",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/customer",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-unica-offer",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/unicaOffer",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/unica-offer",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-unica-offer-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/unicaOffer/v2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/unica-offer/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-unica-offer-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/unicaOffer/offerDetail",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/unica-offer/detail",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-unica-post-event",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/unicaPostEvent",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/product/unica-post-event",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "product-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/product/{id}",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/product/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 1
+    },
+    {
+      "Key": "features-ovit-offer",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/features/ovit-offer",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/features/ovit-offer",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "subscriber-ovit",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/subscriber/ovit",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/subscriber/ovit",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "subscriber-community",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/subscriber/community",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/subscriber/community",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "subscriber-community-gameon",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/subscriber/community/gameon",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/subscriber/community/gameon",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "subscriber-add-community",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/subscriber/addCommunity",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/subscriber/add-community",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "subscriber-remove-community",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/subscriber/removeCommunity",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/subscriber/remove-community",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "lead-type",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/lead/type",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/lead/type",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "lead-check",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/lead/check",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/lead/check",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "lead-create",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/lead/create",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/lead/create",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "lead-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/lead/{id}",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/lead/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "guest-captcha",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/captcha",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/captcha",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "guest-end-to-end-check-tckn",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/endToEnd/checkTckn",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/end-to-end/check-tckn",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "guest-end-to-end-customer-order",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/endToEnd/customerOrder",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/end-to-end/customer-order",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "guest-end-to-end-sales-order-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/endToEnd/salesOrderDetail",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/end-to-end/sales-order-detail",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "guest-end-to-end-cancel-appointment",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/endToEnd/cancelAppointment",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/end-to-end/cancel-appointment",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "guest-end-to-end-query-calendar",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/endToEnd/queryCalendarAvailability",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/end-to-end/query-calendar",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "guest-end-to-end-update-appointment",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/endToEnd/updateAppointment",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/end-to-end/update-appointment",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "guest-generic-campaigns",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/guest/generic/campaigns",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/guest/generic/campaigns",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "line-suspension-query",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/linesuspension/query",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/line-suspension/query",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "line-suspension-cancel",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/lineSuspension/cancel",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/line-suspension/cancel",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "otp-generate",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/otp/generate",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/otp/generate",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-product-list",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/productList/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/product-list/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-list-with-details",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/listWithDetails",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/list-with-details",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-list-with-details-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/listWithDetails/v2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/list-with-details/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-info",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/info",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/info",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-info-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/info/v2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/info/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-codes",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/codes",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/codes",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-save",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/campaignSave",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/save",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "campaigns-lead-transformation",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/campaigns/leadForTransformation",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/campaigns/lead-transformation",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-offer-detail-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/offerDetail/v2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/offer-detail/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-offer-penalty",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/offerPenalty",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/offer-penalty",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/v2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-list-with-details",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/listWithDetails",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/list-with-details",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-list-with-details-v4",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/listWithDetails/v4/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/list-with-details/v4/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-post-date",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/postDate",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/post-date",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-post-date-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/postDate/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/post-date/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "packages-tivibu",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/tivibu",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/tivibu",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-tivibu-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/tivibu/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/tivibu/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "packages-list-with-details-tivibu",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/listWithDetails/tivibu/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/list-with-details/tivibu/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-campaign-list",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/campaignPackageList",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/packages/campaign-list",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "packages-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/packages/{id}",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/packages/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 1
+    },
+    {
+      "Key": "thk-list-with-details",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/thk/listWithDetails",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/thk/list-with-details",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "thk-offer-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/thk/offerDetail",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/thk/offer-detail",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "thk-info",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/thk/info",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/thk/info",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "adid-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/adid/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/adid/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "document-retrieve",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/document/retrieveDocumentForChannels",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/document/retrieve",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "document-submit",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/document/submitDocumentForChannels",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/document/submit",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-spot-precontrol",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/spotProblem/preControl/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/spot-problem/pre-control/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-connection-precontrol",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/connectionProblem/preControl",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/connection-problem/pre-control",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-connection-precontrol-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/connectionProblem/preControl/result",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/connection-problem/pre-control/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-disrupted-precontrol",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/disruptedconnection/precontrol",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/disrupted-connection/pre-control",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-disrupted-precontrol-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/disruptedConnection/preControl/result",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/disrupted-connection/pre-control/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-lowspeed-precontrol",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/lowSpeed/preControl",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/low-speed/pre-control",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-lowspeed-precontrol-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/lowSpeed/preControl/result",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/low-speed/pre-control/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-lowspeed-upspeed",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/lowSpeed/upSpeed",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/low-speed/up-speed",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-internet-precontrol",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/internetProblem/preControl",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/internet-problem/pre-control",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-internet-precontrol-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/internetProblem/preControl/result",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/internet-problem/pre-control/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-ping-precontrol",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/pingProblem/preControl",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/ping-problem/pre-control",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-ping-precontrol-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/pingProblem/preControl/result",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/ping-problem/pre-control/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-nolight-precontrol",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/nolightonsa/preControl",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/no-light/pre-control",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-nolight-precontrol-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/nolightonsa/preControl/result",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/no-light/pre-control/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-ticket-history-v2",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/ticketHistory/v2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/ticket-history/v2",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-ticket-history-confirm",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/ticketHistory/confirm",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/ticket-history/confirm",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-create-ticket",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/createTicket",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/create-ticket",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-create-ticket-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/createTicket/result",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/create-ticket/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-create-ticket-tivibu",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/createTicket/tivibu",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/create-ticket/tivibu",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-create-ticket-tivibu-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/createTicket/tivibu/result",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/create-ticket/tivibu/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-tivibu-provision-code",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/spotProblem/preControl/tivibu/getProvisionCode",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/spot-problem/tivibu/provision-code",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-check-quant-validation",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/checkQuantValidation",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/check-quant-validation",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-quant",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/quant",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/quant",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-quant-speed-test",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/quantSpeedTest",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/quant-speed-test",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-quant-channel-change",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratikNet/quantChannelChange",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/quant-channel-change",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-malfunction-result",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/malfunction/result",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/malfunction/result",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "pratiknet-forward-policy",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/pratiknet/spotProblem/forwardPolicy",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/pratiknet/spot-problem/forward-policy",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "settings-password-modem",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/settings/passwordModem",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/settings/password-modem",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "settings-restart-modem",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/settings/restartModem",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/settings/restart-modem",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "end-to-end-check-tckn",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/endToEnd/checkTckn",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/end-to-end/check-tckn",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "end-to-end-customer-order",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/endToEnd/customerOrder",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/end-to-end/customer-order",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "end-to-end-sales-order-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/endToEnd/salesOrderDetail",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/end-to-end/sales-order-detail",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "end-to-end-cancel-appointment",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/endToEnd/cancelAppointment",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/end-to-end/cancel-appointment",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "end-to-end-query-calendar",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/endToEnd/queryCalendarAvailability",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/end-to-end/query-calendar",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "end-to-end-update-appointment",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/endToEnd/updateAppointment",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/end-to-end/update-appointment",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "profile-list",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/profile/list",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/profile/list",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "profile-history",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/profile/history",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/profile/history",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "profile-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/profile/{id}",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/profile/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "auto-payment-exist",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/autoPayment/exist",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/auto-payment/exist",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "auto-payment-delete",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/autoPayment/delete",
+      "UpstreamHttpMethod": [
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/auto-payment/delete",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10,
+      "Metadata": {}
+    },
+    {
+      "Key": "auto-payment-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/autoPayment/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/auto-payment/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "flow-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/flow/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/flow/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 5
+    },
+    {
+      "Key": "address-cities",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/address/cities",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/address/cities",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "address-districts",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/address/districts",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/address/districts",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "address-villages",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/address/allvillages",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/address/villages",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10,
+      "Metadata": {
+        "NewSystemPercentage": 75
+      }
+    },
+    {
+      "Key": "address-neighborhoods",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/address/neighborhoods",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/address/neighborhoods",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "address-streets",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/address/streets",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/address/streets",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "address-buildings",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/address/buildings",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/address/buildings",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "address-apartments",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/address/apartments",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/address/apartments",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "image-captcha",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/image/captcha",
+      "UpstreamHttpMethod": [
+        "GET"
+      ],
+      "DownstreamPathTemplate": "/api/image/captcha",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "bana-ozel-promocodes",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/banaOzel/getPromocodes",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/bana-ozel/promocodes",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "dashboard-init",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/dashboard/init",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/dashboard/init",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "digitt-offer",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/digitt/offer",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/digitt/offer",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "digitt-offer-detail",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/digitt/offer/{processId}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST"
+      ],
+      "DownstreamPathTemplate": "/api/digitt/offer/{processId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 10
+    },
+    {
+      "Key": "catchall-legacy",
+      "UpstreamPathTemplate": "/moim/api/v1/internet/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 0
+    },
+    {
+      "Key": "catchall-api",
+      "UpstreamPathTemplate": "/api/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "global-target",
+          "Port": 0
+        }
+      ],
+      "RouteIsCaseSensitive": false,
+      "Priority": 0
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:52000",
+    "RequestIdKey": "X-Correlation-Id",
+    "DownstreamScheme": "https",
+    "RateLimitOptions": {
+      "DisableRateLimitHeaders": false,
+      "QuotaExceededMessage": "Çok fazla istek gönderdiniz. Lütfen bekleyin.",
+      "HttpStatusCode": 429,
+      "ClientIdHeader": "X-Client-Id"
+    },
+    "Metadata": {
+      "NewSystemHost": "localhost",
+      "NewSystemPort": 52201
+    }
+  },
+  "FeatureManagement": {
+    "Auth_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Usage_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Bill_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Product_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Campaigns_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Packages_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "PratikNet_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Guest_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Lead_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Subscriber_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Settings_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "EndToEnd_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Profile_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Address_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Dashboard_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Thk_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Document_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Otp_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "LineSuspension_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "AutoPayment_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Flow_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Features_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "BanaOzel_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Digitt_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Image_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "GenericMessages_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    },
+    "Adid_UseNew": {
+      "EnabledFor": [
+        {
+          "Name": "Percentage",
+          "Parameters": {
+            "Value": 0
+          }
+        }
+      ]
+    }
+  }
+}

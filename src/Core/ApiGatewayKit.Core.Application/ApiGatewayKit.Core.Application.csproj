@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ApiGatewayKit.Core.Application</RootNamespace>
+    <AssemblyName>ApiGatewayKit.Core.Application</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ApiGatewayKit.Core.Domain\ApiGatewayKit.Core.Domain.csproj" />
+    <ProjectReference Include="..\ApiGatewayKit.Core.Shared\ApiGatewayKit.Core.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="AutoMapper" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>
+

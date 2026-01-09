@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Developer Guide</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.5; margin: 2rem; max-width: 960px; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    pre { padding: 1rem; overflow: auto; border: 1px solid rgba(127,127,127,.35); border-radius: .5rem; }
+    h2, h3 { margin-top: 2rem; }
+    ul { padding-left: 1.25rem; }
+  </style>
+</head>
+<body>
+  <h2>Developer Guide</h2>
+
+  <h3>Amaç</h3>
+  <p>Bu repo <strong>SOLID</strong>, <strong>Clean Architecture</strong> ve <strong>Onion</strong> yaklaşımıyla geliştirilir. Hedefimiz basit, anlaşılır, testlenebilir ve sürdürülebilir bir kod tabanı.</p>
+
+  <h3>Mimari eksen (Onion / Clean Architecture)</h3>
+  <ul>
+    <li><strong>Domain</strong> (<code>src/Core/ApiGatewayKit.Core.Domain</code>): saf iş kuralları ve entity’ler, framework/IO bağımlılığı yok.</li>
+    <li><strong>Application</strong> (<code>src/Core/ApiGatewayKit.Core.Application</code>): use-case’ler, orchestrasyon ve port’lar (interface/abstraction). Domain’e bağımlıdır; Infrastructure’a bağımlı değildir.</li>
+    <li><strong>Infrastructure</strong> (<code>src/Infrastructure/*</code>): adapter’lar/implementasyonlar (cache, logging, external services). Application’daki abstraction’ları uygular.</li>
+    <li><strong>Gateway</strong> (<code>src/Gateway/ApiGatewayKit.Gateway</code>): composition root (DI), HTTP concerns, middleware/controller. İç katmanlara (Application) dayanır, Infrastructure implementasyonlarını DI ile bağlar.</li>
+  </ul>
+
+  <h3>SOLID kuralları</h3>
+  <ul>
+    <li><strong>S</strong>: Her sınıf/metot tek sorumluluk.</li>
+    <li><strong>O</strong>: Davranışı genişletilebilir yap (yeni class/strategy), mevcut kodu kırma.</li>
+    <li><strong>L</strong>: Türetilen sınıflar base kontratını bozmaz.</li>
+    <li><strong>I</strong>: Büyük interface yerine küçük/amaçlı interface.</li>
+    <li><strong>D</strong>: Gateway/Infrastructure, Application port’larına bağlanır; concrete bağımlılık içeri akmaz.</li>
+  </ul>
+
+  <h3>Test kuralları (zorunlu)</h3>
+  <ul>
+    <li><strong>Her metot için test yazılır</strong>.
+      <ul>
+        <li>Saf/IO’suz metotlar: unit test (deterministik assertion).</li>
+        <li>HTTP pipeline (middleware/controller): integration test (TestServer / WebApplicationFactory).</li>
+      </ul>
+    </li>
+    <li><strong>Yeni eklenen veya değişen her metot aynı değişiklikte testleriyle birlikte gelmek zorunda.</strong></li>
+  </ul>
+
+  <h3>Definition of Done</h3>
+  <ul>
+    <li>İlgili metotların testleri eklendi/güncellendi</li>
+    <li><code>dotnet test</code> başarılı</li>
+    <li><code>DeveloperGuide.md</code> ve <code>DeveloperGuide.html</code> güncellendi</li>
+  </ul>
+
+  <h3>Güvenlik (zorunlu)</h3>
+  <ul>
+    <li><strong>Security-first</strong>: her değişiklikte güvenlik etkisi düşünülür ve dokümante edilir.</li>
+    <li><strong>Input validation</strong>: dış girdiler validate/sanitize edilir (HTTP/header/query/config/external). Allow-list tercih edilir.</li>
+    <li><strong>AuthN/AuthZ</strong>: korumalı endpoint’lerde auth zorunlu; deny-by-default; bypass yok.</li>
+    <li><strong>Secrets</strong>: secret/credential repoya girmez; log’lanmaz; güvenli kaynaklardan okunur.</li>
+    <li><strong>PII/logging</strong>: minimum log, hassas alanlar maskelenir, log injection engellenir.</li>
+    <li><strong>Crypto</strong>: custom crypto yok; .NET güvenilir primitive’leri; password hash için güçlü algoritmalar (BCrypt/PBKDF2/Argon2).</li>
+    <li><strong>SSRF/outbound</strong>: user-controlled URL fetch yok; outbound hedef allow-list/validasyon.</li>
+    <li><strong>File/path safety</strong>: path traversal önle; user input ile path birleştirme risklerine dikkat.</li>
+  </ul>
+
+  <h3>Definition of Done (Security)</h3>
+  <ul>
+    <li>Güvenlik etkisi ve mitigasyonları bu dokümana eklendi</li>
+    <li>Değişen/yeni metotların güvenlik-kritik branch’leri test edildi</li>
+  </ul>
+
+  <h3>Komutlar</h3>
+  <pre><code>dotnet test .\ApiGatewayKit.Gateway.sln -c Debug</code></pre>
+
+  <h3>Uygulama kullanımı (Developer + DevOps)</h3>
+
+  <h3>Çalıştırma</h3>
+  <ul>
+    <li><strong>Local (Development)</strong>:
+      <ul>
+        <li><code>src/Gateway/ApiGatewayKit.Gateway/Properties/launchSettings.json</code> profillerinde varsayılan URL’ler:
+          <ul>
+            <li>HTTP: <code>http://localhost:53000</code></li>
+            <li>HTTPS: <code>https://localhost:53001</code> (ek olarak HTTP)</li>
+          </ul>
+        </li>
+        <li>Admin panel varsayılan açılış path’i: <code>/admin</code></li>
+      </ul>
+    </li>
+    <li><strong>Sağlık kontrolü</strong>: <code>GET /health</code></li>
+  </ul>
+
+  <h3>Admin Panel (UI)</h3>
+  <ul>
+    <li><strong>URL</strong>: <code>/admin</code> (statik dosya: <code>src/Gateway/ApiGatewayKit.Gateway/wwwroot/admin/index.html</code>)</li>
+    <li><strong>Auth</strong>: Admin panel giriş ekranı API Key ister ve backend’e şu header ile çağrı yapar:
+      <ul>
+        <li><code>X-Admin-Api-Key: &lt;PLAIN_TEXT_KEY&gt;</code></li>
+      </ul>
+    </li>
+    <li><strong>Not</strong>: API key tarayıcıda <code>localStorage</code> altında saklanır; shared machine/VDI ortamlarında dikkat edilir.</li>
+  </ul>
+
+  <h3>Admin API (HTTP)</h3>
+  <p>Admin API route prefix: <code>/api/gateway/admin</code></p>
+
+  <h3>Okuma (Read) operasyonları</h3>
+  <ul>
+    <li><code>GET /api/gateway/admin/health</code>: ortam/versiyon ve ocelot.json varlığı gibi temel durum bilgisi.</li>
+    <li><code>GET /api/gateway/admin/config</code>: Gateway config özetini döner.</li>
+    <li><code>GET /api/gateway/admin/modules</code>: modüller + route’lar ve metrikler (toplam modül/endpoint).</li>
+    <li><code>GET /api/gateway/admin/modules/{moduleCode}</code>: tek modül detayı.</li>
+    <li><code>GET /api/gateway/admin/module-definitions</code>: modül sözlüğü (Türkçe ad/açıklama).</li>
+    <li><code>GET /api/gateway/admin/feature-flags</code>: feature flag durumları.</li>
+    <li><code>GET /api/gateway/admin/routes/overrides</code>: aktif endpoint override listesi.</li>
+  </ul>
+
+  <h3>Yazma (Write) operasyonları</h3>
+  <ul>
+    <li><code>PUT /api/gateway/admin/modules/{moduleCode}/percentage</code>
+      <ul>
+        <li>Body: <code>{ "percentage": 0..100 }</code></li>
+        <li>Modülün yeni sisteme yönlenme yüzdesini günceller (ocelot.json FeatureManagement bölümünü günceller).</li>
+      </ul>
+    </li>
+    <li><code>PUT /api/gateway/admin/routes/override</code>
+      <ul>
+        <li>Body: <code>{ "moduleCode": "&lt;code&gt;", "path": "&lt;upstreamPathTemplate&gt;", "percentage": 0..100 | null }</code></li>
+        <li>Belirli endpoint için override yazar/kaldırır (<code>percentage:null</code> =&gt; override kaldır).</li>
+      </ul>
+    </li>
+    <li><code>DELETE /api/gateway/admin/routes/override?path=&lt;upstreamPathTemplate&gt;</code>: tek endpoint override kaldırır.</li>
+    <li><code>DELETE /api/gateway/admin/routes/overrides/clear</code>: tüm endpoint override’larını temizler.</li>
+  </ul>
+
+  <h3>Acil durum (Emergency) operasyonları</h3>
+  <ul>
+    <li><code>POST /api/gateway/admin/emergency/rollback</code>: tüm trafiği legacy’ye çeker (ocelot.json içindeki yüzdeleri 0 yapar ve route override’ları temizler).</li>
+  </ul>
+
+  <h3>Admin Security modeli (GatewayAdmin)</h3>
+  <p>Admin güvenliği DB kullanmadan <code>appsettings*.json</code> üzerinden yönetilir.</p>
+  <ul>
+    <li><strong>Config section</strong>: <code>GatewayAdmin</code> (bkz. <code>src/Gateway/ApiGatewayKit.Gateway/appsettings.json</code>)</li>
+    <li><strong>Katmanlar (sıra önemlidir)</strong>: IP Whitelist → API Key Auth → Admin Rate Limit</li>
+  </ul>
+
+  <h3>IP Whitelist</h3>
+  <ul>
+    <li><code>GatewayAdmin:IpWhitelist</code> listesi admin endpoint’lerine erişebilecek IP/CIDR’ları tanımlar.</li>
+    <li>CIDR destekler (örn: <code>10.0.0.0/8</code>, <code>192.168.0.0/16</code>).</li>
+  </ul>
+
+  <h3>API Key üretimi ve konfigürasyonu</h3>
+  <ul>
+    <li><strong>Plain text key repoda tutulmaz</strong>; config’e SHA256 hash yazılır.</li>
+    <li><strong>Header ile kullanım (önerilen)</strong>: <code>X-Admin-Api-Key: &lt;PLAIN_TEXT_KEY&gt;</code></li>
+    <li><strong>Query string ile kullanım (sadece troubleshooting)</strong>: <code>?api_key=&lt;PLAIN_TEXT_KEY&gt;</code></li>
+    <li><strong>Hash formatı</strong>: <code>sha256:&lt;hex&gt;</code></li>
+  </ul>
+
+  <h3>Development ortamında hash üretme (tools endpoint)</h3>
+  <ul>
+    <li>Bu endpoint sadece Development’ta aktiftir; Production’da 404 döner.</li>
+    <li><code>GET /api/gateway/admin/tools/generate-key-hash?key=&lt;plainText&gt;</code> (key verilmezse rastgele üretir)</li>
+    <li><strong>Öneri (DevOps)</strong>: PLAIN TEXT key’i secret store’da sakla; app config’te sadece <code>KeyHash</code> tut.</li>
+  </ul>
+
+  <h3>Permission (Read/Write/Emergency)</h3>
+  <p><code>GatewayAdmin:ApiKeys[*]:Permissions</code> içinde tanımlanır:</p>
+  <ul>
+    <li><code>read</code>: okuma endpoint’leri</li>
+    <li><code>write</code>: yazma endpoint’leri (+ read)</li>
+    <li><code>emergency</code>: acil durum operasyonları (+ write + read)</li>
+  </ul>
+
+  <h3>Rate Limit (Admin)</h3>
+  <ul>
+    <li>Admin endpoint’leri için ayrı in-memory rate limit vardır:
+      <ul>
+        <li><code>GatewayAdmin:RateLimit:RequestsPerMinute</code></li>
+        <li><code>GatewayAdmin:RateLimit:BlockDurationMinutes</code></li>
+      </ul>
+    </li>
+    <li>Response header’ları: <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code></li>
+    <li>Limit aşımında: HTTP <code>429</code> + <code>Retry-After</code></li>
+  </ul>
+
+  <h3>Production kısıtları</h3>
+  <ul>
+    <li><code>GatewayAdmin:Production:DisableWriteEndpoints</code></li>
+    <li><code>GatewayAdmin:Production:AllowedEndpoints</code> (boşsa hepsine izin)</li>
+  </ul>
+
+  <h3>Audit Log</h3>
+  <ul>
+    <li>Admin API çağrıları dosyaya audit log olarak yazılabilir.</li>
+    <li><code>GatewayAdmin:Audit:FilePath</code> örn: <code>logs/admin-audit/audit-{Date}.log</code></li>
+    <li><code>LogRequestBody</code> hassas veri içerebilir; güvenlik gereksinimlerine göre kapatılabilir.</li>
+  </ul>
+
+  <h3>Operasyonel notlar (DevOps)</h3>
+  <ul>
+    <li><strong>ocelot.json</strong>:
+      <ul>
+        <li>Gateway routing ve feature flag yüzdeleri bu dosya üzerinden yönetilir.</li>
+        <li>Admin write operasyonları ocelot.json’ı günceller; container/host üzerinde dosyanın writeable olması gerekir.</li>
+      </ul>
+    </li>
+    <li><strong>Reverse proxy / gerçek IP</strong>:
+      <ul>
+        <li>Genel IP rate limiting <code>X-Real-IP</code> header’ını kullanacak şekilde ayarlı (<code>IpRateLimiting:RealIpHeader</code>).</li>
+        <li>Reverse proxy arkasında doğru client IP’yi taşımak için header forwarding/allow-list uygulanır.</li>
+      </ul>
+    </li>
+  </ul>
+</body>
+</html>
+

@@ -1,0 +1,23 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.csproj.user
+
+# Build output
+**/bin/
+**/obj/
+
+# Test results
+TestResults/
+
+# Logs
+*.log
+**/logs/
+
+# OS files
+Thumbs.db
+Desktop.ini
+

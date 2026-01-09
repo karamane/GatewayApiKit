@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ApiGatewayKit.Infrastructure.Logging</RootNamespace>
+    <AssemblyName>ApiGatewayKit.Infrastructure.Logging</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\ApiGatewayKit.Core.Application\ApiGatewayKit.Core.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
+    <PackageReference Include="Serilog.Enrichers.Process" />
+    <PackageReference Include="Serilog.Expressions" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
+  </ItemGroup>
+
+</Project>
+

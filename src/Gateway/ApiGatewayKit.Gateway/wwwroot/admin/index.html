@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Yönetim Paneli</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --legacy: #6366f1;
+            --new: #10b981;
+            --split: #f59e0b;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        /* =================== LOGIN STYLES =================== */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #1e40af 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .login-overlay.hidden { display: none; }
+        
+        .login-box {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .login-logo .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .login-logo h1 {
+            font-size: 24px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .login-logo p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .login-form label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .login-form .input-wrapper {
+            position: relative;
+        }
+        
+        .login-form input[type="password"],
+        .login-form input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            padding-right: 48px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        .toggle-visibility {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        
+        .toggle-visibility:hover { opacity: 1; }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .login-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .login-error.visible { display: flex; align-items: center; gap: 8px; }
+        
+        .login-info {
+            margin-top: 24px;
+            padding: 16px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            border: 1px solid #bae6fd;
+        }
+        
+        .login-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .login-info .icon { font-size: 16px; }
+        
+        /* =================== MAIN APP STYLES =================== */
+        .app-container { display: none; }
+        .app-container.visible { display: block; }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* =================== LAYOUT (SIDEBAR) =================== */
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 16px;
+        }
+
+        .sidebar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            height: calc(100vh - 48px);
+            position: sticky;
+            top: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .nav-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text);
+            text-align: left;
+            transition: all 0.15s;
+        }
+
+        .nav-item:hover {
+            background: #f8fafc;
+            border-color: var(--border);
+        }
+
+        .nav-item.active {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: rgba(37, 99, 235, 0.25);
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .view.hidden { display: none; }
+
+        .lb-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .lb-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .lb-table th {
+            background: #f8fafc;
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .lb-table td {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            color: var(--text-muted);
+        }
+
+        .pill.ok { background: #ecfdf5; color: #15803d; border-color: rgba(21, 128, 61, .25); }
+        .pill.off { background: #fef2f2; color: #b91c1c; border-color: rgba(185, 28, 28, .25); }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(0,0,0,0.12);
+            flex: 0 0 auto;
+        }
+
+        .status-dot.ok { background: #22c55e; }
+        .status-dot.off { background: #ef4444; }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 { font-size: 28px; font-weight: 600; }
+        header .subtitle { opacity: 0.9; font-size: 14px; margin-top: 4px; }
+        
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .user-info .user-name {
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary { background: white; color: var(--primary); }
+        .btn-primary:hover { background: #f8fafc; transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-logout { 
+            background: rgba(255,255,255,0.2); 
+            color: white; 
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.3); }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .status-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .status-card .label { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+        .status-card .value { font-size: 24px; font-weight: 700; }
+        .status-card .value.healthy { color: var(--success); }
+        
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .card-header:hover { background: #f8fafc; }
+        
+        .card-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .module-code {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .endpoint-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+        
+        .target-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .target-badge.legacy { background: #eef2ff; color: var(--legacy); }
+        .target-badge.new { background: #ecfdf5; color: var(--new); }
+        .target-badge.split { background: #fffbeb; color: var(--split); }
+        
+        .card-body {
+            padding: 0;
+            display: none;
+        }
+        
+        .card-body.expanded { display: block; }
+        
+        .route-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        .route-table th {
+            background: #f8fafc;
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        
+        .route-table td {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+        
+        .route-table tr:hover { background: #fafafa; }
+        
+        .path-cell {
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .path-legacy {
+            color: var(--legacy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .path-new {
+            color: var(--new);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .path-label {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .path-label.legacy { background: #eef2ff; }
+        .path-label.new { background: #ecfdf5; }
+        
+        .method-badges {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .method-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+        }
+        
+        .method-badge.get { background: #dbeafe; color: #1d4ed8; }
+        .method-badge.post { background: #dcfce7; color: #15803d; }
+        .method-badge.put { background: #fef3c7; color: #b45309; }
+        .method-badge.delete { background: #fee2e2; color: #b91c1c; }
+        
+        .expand-icon {
+            transition: transform 0.2s;
+            font-size: 12px;
+        }
+        
+        .expanded .expand-icon { transform: rotate(90deg); }
+        
+        .emergency-section {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #fca5a5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+        
+        .emergency-section h3 {
+            color: var(--danger);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .emergency-section p {
+            color: #991b1b;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 48px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .info-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .info-box-icon { font-size: 20px; }
+        .info-box-content h4 { font-size: 14px; margin-bottom: 4px; }
+        .info-box-content p { font-size: 13px; color: var(--text-muted); }
+        
+        /* Yüzde Kontrol Stilleri */
+        .percentage-control {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .percentage-slider {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .percentage-slider input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, var(--legacy) 0%, var(--new) 100%);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .percentage-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        
+        .percentage-value {
+            font-size: 18px;
+            font-weight: 700;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .quick-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .quick-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .quick-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .quick-btn.legacy-btn { background: #eef2ff; color: var(--legacy); border-color: var(--legacy); }
+        .quick-btn.new-btn { background: #ecfdf5; color: var(--new); border-color: var(--new); }
+        
+        .target-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .target-indicator.legacy { background: #eef2ff; color: var(--legacy); }
+        .target-indicator.new { background: #ecfdf5; color: var(--new); }
+        
+        .route-target-cell {
+            width: 100px;
+            text-align: center;
+        }
+        
+        .route-override {
+            width: 280px;
+        }
+        
+        .override-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .override-btn {
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .override-btn:hover { transform: scale(1.05); }
+        .override-btn.active { box-shadow: 0 0 0 2px var(--primary); }
+        .override-btn.legacy { background: #eef2ff; color: var(--legacy); border-color: var(--legacy); }
+        .override-btn.split { background: #fffbeb; color: var(--split); border-color: var(--split); }
+        .override-btn.new { background: #ecfdf5; color: var(--new); border-color: var(--new); }
+        .override-btn.module { background: #f1f5f9; color: var(--text-muted); border-color: var(--border); }
+        
+        .override-input {
+            width: 70px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .override-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- =================== LOGIN SCREEN =================== -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-box">
+            <div class="login-logo">
+                <div class="icon">🔐</div>
+                <h1>Gateway Yönetim Paneli</h1>
+                <p>Yönetim paneline erişmek için API Key giriniz</p>
+            </div>
+            
+            <div id="login-error" class="login-error">
+                <span>⚠️</span>
+                <span id="login-error-text">Geçersiz API Key</span>
+            </div>
+            
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="api-key-input">API Key</label>
+                    <div class="input-wrapper">
+                        <input type="password" 
+                               id="api-key-input" 
+                               placeholder="API Key'inizi girin" 
+                               autocomplete="off"
+                               required>
+                        <button type="button" class="toggle-visibility" onclick="togglePassword()">👁️</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn" id="login-btn">
+                    <span>🚀</span>
+                    <span>Giriş Yap</span>
+                </button>
+            </form>
+            
+            <div class="login-info">
+                <p>
+                    <span class="icon">ℹ️</span>
+                    <span>API Key'inizi DevOps ekibinden alabilirsiniz. Key güvenli bir şekilde tarayıcınızda saklanır.</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- =================== MAIN APPLICATION =================== -->
+    <div id="app-container" class="app-container">
+        <div class="container">
+            <div class="layout">
+                <nav class="sidebar">
+                    <div class="sidebar-title">Yönetim</div>
+                    <div class="sidebar-subtitle">Yönlendirme & Yük Dengeleme</div>
+                    <button id="menu-routing" class="nav-item active" onclick="switchView('routing')">
+                        <span>🧭</span>
+                        <span>Routing Yönetimi</span>
+                    </button>
+                    <button id="menu-loadbalancing" class="nav-item" onclick="switchView('loadbalancing')">
+                        <span>⚖️</span>
+                        <span>Yük Dengeleme</span>
+                    </button>
+                </nav>
+
+                <div>
+                    <header>
+                        <div>
+                            <h1>🚀 Gateway Yönetim Paneli</h1>
+                            <div class="subtitle">Ocelot + FeatureManagement - Modül bazlı trafik yönlendirme</div>
+                        </div>
+                        <div class="header-actions">
+                            <div class="user-info">
+                                <span>👤</span>
+                                <span class="user-name" id="current-user">-</span>
+                            </div>
+                            <button class="btn btn-primary" onclick="loadData()">🔄 Yenile</button>
+                            <button class="btn btn-logout" onclick="handleLogout()">🚪 Çıkış</button>
+                        </div>
+                    </header>
+
+                    <div id="view-routing" class="view">
+                        <div class="info-box">
+                            <span class="info-box-icon">💡</span>
+                            <div class="info-box-content">
+                                <h4>Tek Kaynak Yönetimi</h4>
+                                <p>Tüm yönlendirme kuralları ve yüzdeler artık sadece <code>ocelot.json</code> dosyası üzerinden yönetilmektedir. Değişiklikler anında Gateway'e yansır.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-grid">
+                            <div class="status-card">
+                                <div class="label">Sistem Durumu</div>
+                                <div class="value healthy" id="system-status">Yükleniyor...</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="label">Toplam Modül</div>
+                                <div class="value" id="module-count">-</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="label">Toplam Endpoint</div>
+                                <div class="value" id="endpoint-count">-</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="label">Varsayılan Hedef</div>
+                                <div class="value" id="default-target">-</div>
+                            </div>
+                        </div>
+                        
+                        <div id="modules-container">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="emergency-section">
+                            <h3>⚠️ Acil Durum</h3>
+                            <p>
+                                Tüm trafiği hemen Legacy sisteme yönlendirmek ve tüm override'ları temizlemek için aşağıdaki butonu kullanın.
+                            </p>
+                            <button class="btn btn-danger" onclick="emergencyRollback()">
+                                🛑 Tüm Trafiği Legacy'ye Çek (Rollback)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="view-loadbalancing" class="view hidden">
+                        <div class="info-box">
+                            <span class="info-box-icon">⚖️</span>
+                            <div class="info-box-content">
+                                <h4>Yük Dengeleme Yönetimi</h4>
+                                <p>Sunucu bazlı genel aç/kapat ve endpoint bazlı sunucu etkinleştirme/devre dışı bırakma işlemlerini buradan yönetebilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        <div class="lb-grid">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>LEGACY Sunucular</h3>
+                                </div>
+                                <div class="card-body expanded" style="display:block">
+                                    <table class="lb-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Sunucu Adresi</th>
+                                                <th>Ağırlık</th>
+                                                <th>Durum</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="lb-legacy-nodes">
+                                            <tr><td colspan="4" style="padding:16px;color:var(--text-muted)">Yükleniyor...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>YENİ Sunucular</h3>
+                                </div>
+                                <div class="card-body expanded" style="display:block">
+                                    <table class="lb-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Sunucu Adresi</th>
+                                                <th>Ağırlık</th>
+                                                <th>Durum</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="lb-new-nodes">
+                                            <tr><td colspan="4" style="padding:16px;color:var(--text-muted)">Yükleniyor...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-top: 16px;">
+                            <div class="card-header">
+                                <h3>Endpoint Bazlı Sunucu Durumu</h3>
+                            </div>
+                            <div class="card-body expanded" style="display:block">
+                                <div id="lb-routes" style="padding: 16px; color: var(--text-muted);">Yükleniyor...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '/api/gateway/admin';
+        const STORAGE_KEY = 'gateway_admin_api_key';
+        const USER_KEY = 'gateway_admin_user';
+        let currentView = 'routing';
+        let cachedNodes = null;
+        let cachedNodeStatus = null;
+        let cachedRouteStates = {};
+        let cachedRoutes = [];
+        
+        // =================== AUTH FUNCTIONS ===================
+        
+        function getStoredApiKey() {
+            return localStorage.getItem(STORAGE_KEY);
+        }
+        
+        function setStoredApiKey(key, userName) {
+            localStorage.setItem(STORAGE_KEY, key);
+            if (userName) {
+                localStorage.setItem(USER_KEY, userName);
+            }
+        }
+        
+        function clearStoredApiKey() {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(USER_KEY);
+        }
+        
+        function getStoredUserName() {
+            return localStorage.getItem(USER_KEY) || 'Kullanıcı';
+        }
+        
+        // API Key ile fetch wrapper
+        async function apiFetch(url, options = {}) {
+            const apiKey = getStoredApiKey();
+            
+            if (!apiKey) {
+                showLoginScreen();
+                throw new Error('No API key');
+            }
+            
+            const headers = {
+                ...options.headers,
+                'X-Admin-Api-Key': apiKey
+            };
+            
+            const response = await fetch(url, { ...options, headers });
+            
+            // 401 veya 403 durumunda login ekranına yönlendir
+            if (response.status === 401 || response.status === 403) {
+                const data = await response.json().catch(() => ({}));
+                
+                // Insufficient permissions değilse (yani invalid key ise) logout yap
+                if (!data.message?.includes('Insufficient permissions')) {
+                    clearStoredApiKey();
+                    showLoginScreen();
+                    throw new Error('Unauthorized');
+                }
+            }
+            
+            return response;
+        }
+        
+        function showLoginScreen() {
+            document.getElementById('login-overlay').classList.remove('hidden');
+            document.getElementById('app-container').classList.remove('visible');
+        }
+        
+        function showAppScreen() {
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('app-container').classList.add('visible');
+            document.getElementById('current-user').textContent = getStoredUserName();
+        }
+        
+        function togglePassword() {
+            const input = document.getElementById('api-key-input');
+            const btn = document.querySelector('.toggle-visibility');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🔒';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+        
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const apiKey = document.getElementById('api-key-input').value.trim();
+            const loginBtn = document.getElementById('login-btn');
+            const errorDiv = document.getElementById('login-error');
+            const errorText = document.getElementById('login-error-text');
+            
+            if (!apiKey) {
+                errorText.textContent = 'API Key boş olamaz';
+                errorDiv.classList.add('visible');
+                return;
+            }
+            
+            // Loading state
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> Doğrulanıyor...';
+            errorDiv.classList.remove('visible');
+            
+            try {
+                // API Key'i test et - health endpoint'ini çağır
+                const response = await fetch(`${API_BASE}/health`, {
+                    headers: { 'X-Admin-Api-Key': apiKey }
+                });
+                
+                if (response.ok) {
+                    // Başarılı - key'i sakla
+                    setStoredApiKey(apiKey, 'Admin');
+                    showAppScreen();
+                    switchView('routing', false);
+                    loadData();
+                } else {
+                    const data = await response.json().catch(() => ({}));
+                    errorText.textContent = data.message || 'Geçersiz API Key';
+                    errorDiv.classList.add('visible');
+                }
+            } catch (err) {
+                errorText.textContent = 'Bağlantı hatası: ' + err.message;
+                errorDiv.classList.add('visible');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span>🚀</span><span>Giriş Yap</span>';
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                clearStoredApiKey();
+                document.getElementById('api-key-input').value = '';
+                showLoginScreen();
+            }
+        }
+        
+        // =================== APP INITIALIZATION ===================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Kayıtlı API Key var mı kontrol et
+            const storedKey = getStoredApiKey();
+            
+            if (storedKey) {
+                // Key var, doğrula
+                validateStoredKey(storedKey);
+            } else {
+                // Key yok, login ekranı göster
+                showLoginScreen();
+            }
+        });
+        
+        async function validateStoredKey(apiKey) {
+            try {
+                const response = await fetch(`${API_BASE}/health`, {
+                    headers: { 'X-Admin-Api-Key': apiKey }
+                });
+                
+                if (response.ok) {
+                    showAppScreen();
+                    switchView('routing', false);
+                    loadData();
+                } else {
+                    clearStoredApiKey();
+                    showLoginScreen();
+                }
+            } catch (err) {
+                // Network hatası - yine de app'i göster, sonra hata verir
+                showAppScreen();
+                loadData();
+            }
+        }
+        
+        // =================== DATA LOADING ===================
+        
+        async function loadData() {
+            if (currentView === 'routing') {
+                await Promise.all([loadHealth(), loadNodesAndRoutes(), loadModules()]);
+                return;
+            }
+
+            if (currentView === 'loadbalancing') {
+                await loadNodesAndRoutes();
+                renderLoadBalancing();
+                return;
+            }
+        }
+
+        async function loadNodesAndRoutes() {
+            console.log('loadNodesAndRoutes: fetching data...');
+            
+            try {
+                const [nodesRes, routesRes, statusRes] = await Promise.all([
+                    apiFetch(`${API_BASE}/nodes`),
+                    apiFetch(`${API_BASE}/routes`),
+                    apiFetch(`${API_BASE}/nodes/status`)
+                ]);
+
+                if (!nodesRes.ok || !routesRes.ok || !statusRes.ok) {
+                    console.error('loadNodesAndRoutes: API error', {
+                        nodes: nodesRes.status,
+                        routes: routesRes.status,
+                        status: statusRes.status
+                    });
+                    return;
+                }
+
+                const nodesData = await nodesRes.json();
+                const routesData = await routesRes.json();
+                const statusData = await statusRes.json();
+
+                console.log('loadNodesAndRoutes: nodes=', nodesData);
+                console.log('loadNodesAndRoutes: routes=', routesData);
+                console.log('loadNodesAndRoutes: status=', statusData);
+
+                cachedNodes = nodesData;
+                cachedNodeStatus = statusData;
+                cachedRoutes = routesData.Routes || routesData.routes || [];
+
+                const map = {};
+                cachedRoutes.forEach(r => {
+                    const key = r.Key || r.key;
+                    if (!key) return;
+                    const dn = r.DisabledNodes || r.disabledNodes || {};
+                    map[key] = {
+                        Legacy: dn.Legacy || dn.legacy || [],
+                        New: dn.New || dn.new || []
+                    };
+                });
+                cachedRouteStates = map;
+                
+                console.log('loadNodesAndRoutes: cachedRouteStates=', cachedRouteStates);
+            } catch (err) {
+                console.error('loadNodesAndRoutes failed:', err);
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    showToast(`Veri yükleme hatası: ${err.message}`, 'error');
+                }
+            }
+        }
+
+        function switchView(view, refresh = true) {
+            currentView = view;
+
+            document.getElementById('menu-routing').classList.toggle('active', view === 'routing');
+            document.getElementById('menu-loadbalancing').classList.toggle('active', view === 'loadbalancing');
+
+            document.getElementById('view-routing').classList.toggle('hidden', view !== 'routing');
+            document.getElementById('view-loadbalancing').classList.toggle('hidden', view !== 'loadbalancing');
+
+            if (refresh) {
+                loadData();
+            }
+        }
+
+        function renderLoadBalancing() {
+            renderNodeTable('Legacy', document.getElementById('lb-legacy-nodes'));
+            renderNodeTable('New', document.getElementById('lb-new-nodes'));
+            renderLoadBalancingRoutes();
+        }
+
+        function domSafeId(value) {
+            return String(value || '').replace(/[^a-zA-Z0-9_-]/g, '_');
+        }
+
+        function getNodeStatus(target, nodeId) {
+            if (!cachedNodeStatus) {
+                return { ready: null, hint: 'Durum bilinmiyor' };
+            }
+
+            const keyA = target;
+            const keyB = String(target).toLowerCase();
+            const list = cachedNodeStatus[keyA] || cachedNodeStatus[keyB] || [];
+            const needle = String(nodeId || '').toLowerCase();
+
+            const found = list.find(x => {
+                const id = (x.Id || x.id || '').toLowerCase();
+                return id === needle;
+            });
+
+            if (!found) {
+                return { ready: null, hint: 'Durum bilinmiyor' };
+            }
+
+            const ready = (found.Ready ?? found.ready);
+            const hint = found.Hint || found.hint || 'Durum bilinmiyor';
+            return { ready: ready === true, hint };
+        }
+
+        function renderStatusDotHtml(ready, hint) {
+            const cls = ready ? 'ok' : 'off';
+            const title = (hint || '').replace(/"/g, '&quot;');
+            return `<span class="status-dot ${cls}" title="${title}"></span>`;
+        }
+
+        function isNodeRouteDisabled(routeKey, target, nodeId) {
+            const state = cachedRouteStates[routeKey] || { Legacy: [], New: [] };
+            const list = (state[target] || state[String(target).toLowerCase()] || []).map(x => String(x || '').toLowerCase());
+            return list.includes(String(nodeId || '').toLowerCase());
+        }
+
+        function hasAnyReadyEffectiveNode(routeKey, target) {
+            const nodes = cachedNodes ? (cachedNodes[target] || cachedNodes[String(target).toLowerCase()] || []) : [];
+            for (const node of nodes) {
+                const id = node.Id || node.id || '';
+                const enabledGlobal = (node.Enabled ?? node.enabled) === true;
+                if (!enabledGlobal) continue;
+                if (routeKey && isNodeRouteDisabled(routeKey, target, id)) continue;
+
+                const status = getNodeStatus(target, id);
+                if (status.ready === true) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function renderEndpointDotsHtml(routeKey) {
+            // Check if ANY node in this target is ready (probe result), regardless of route-level administrative status.
+            // However, a globally disabled node shouldn't count as "available" for the endpoint summary.
+            const hasReadyNode = (target) => {
+                const nodes = cachedNodes ? (cachedNodes[target] || cachedNodes[String(target).toLowerCase()] || []) : [];
+                return nodes.some(n => {
+                    const enabledGlobal = (n.Enabled ?? n.enabled) === true;
+                    if (!enabledGlobal) return false;
+                    const status = getNodeStatus(target, n.Id || n.id || '');
+                    return status.ready === true;
+                });
+            };
+
+            const legacyOk = hasReadyNode('Legacy');
+            const newOk = hasReadyNode('New');
+
+            const legacyDot = renderStatusDotHtml(legacyOk, legacyOk ? 'Legacy: En az bir sunucu hazır' : 'Legacy: Hazır sunucu yok veya erişilemiyor');
+            const newDot = renderStatusDotHtml(newOk, newOk ? 'Yeni: En az bir sunucu hazır' : 'Yeni: Hazır sunucu yok veya erişilemiyor');
+
+            return `
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div style="display:flex;align-items:center;gap:6px">${legacyDot}<span style="font-size:11px;color:var(--text-muted);font-weight:700">L</span></div>
+                    <div style="display:flex;align-items:center;gap:6px">${newDot}<span style="font-size:11px;color:var(--text-muted);font-weight:700">Y</span></div>
+                </div>
+            `;
+        }
+
+        function renderNodeTable(target, tbody) {
+            const key = target === 'Legacy' ? 'legacy' : 'new';
+            const list = cachedNodes
+                ? (cachedNodes[target] || cachedNodes[key] || [])
+                : [];
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="padding:16px;color:var(--text-muted)">${target} için sunucu bulunamadı</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = list.map(n => {
+                const enabled = n.Enabled ?? n.enabled ?? false;
+                const weight = n.Weight ?? n.weight ?? 0;
+                const baseUrl = n.BaseUrl || n.baseUrl || '';
+                const id = n.Id || n.id || '';
+                const pillId = `pill-${target}-${domSafeId(id)}`;
+                const status = getNodeStatus(target, id);
+                const dot = renderStatusDotHtml(status.ready === true, status.hint);
+                return `
+                    <tr>
+                        <td style="font-family: monospace; font-size: 12px;">
+                            <span style="display:inline-flex;align-items:center;gap:8px">
+                                ${dot}
+                                <span>${id}</span>
+                            </span>
+                        </td>
+                        <td style="font-family: monospace; font-size: 12px;">${baseUrl}</td>
+                        <td>${weight}</td>
+                        <td>
+                            <div class="toggle">
+                                <input type="checkbox" ${enabled ? 'checked' : ''} onchange="setGlobalNodeEnabled('${target}', '${id}', this)" />
+                                <span id="${pillId}" class="pill ${enabled ? 'ok' : 'off'}">${enabled ? 'AKTİF' : 'PASİF'}</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function setGlobalNodeEnabled(target, nodeId, checkboxEl) {
+            const enabled = checkboxEl.checked;
+            const originalEnabled = !enabled; // State before click
+            const pillEl = document.getElementById(`pill-${target}-${domSafeId(nodeId)}`);
+
+            console.log(`setGlobalNodeEnabled: target=${target}, nodeId=${nodeId}, enabled=${enabled}`);
+
+            // optimistic UI
+            checkboxEl.disabled = true;
+            if (pillEl) {
+                pillEl.classList.toggle('ok', enabled);
+                pillEl.classList.toggle('off', !enabled);
+                pillEl.textContent = enabled ? 'AKTİF' : 'PASİF';
+            }
+
+            try {
+                const res = await apiFetch(`${API_BASE}/nodes/${encodeURIComponent(nodeId)}/enabled`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled })
+                });
+
+                if (res.ok) {
+                    const result = await res.json();
+                    console.log('setGlobalNodeEnabled success:', result);
+                    
+                    showToast(`Sunucu ${nodeId} ${enabled ? 'aktif' : 'pasif'} edildi`, 'success');
+                    
+                    // Reload data from server and re-render
+                    await loadNodesAndRoutes();
+                    
+                    // Re-render only the node tables, not the entire LB view
+                    renderNodeTable('Legacy', document.getElementById('lb-legacy-nodes'));
+                    renderNodeTable('New', document.getElementById('lb-new-nodes'));
+                } else {
+                    const error = await res.text();
+                    console.error('setGlobalNodeEnabled failed:', error);
+                    showToast(`Hata: ${error}`, 'error');
+                    checkboxEl.checked = originalEnabled;
+                    if (pillEl) {
+                        pillEl.classList.toggle('ok', originalEnabled);
+                        pillEl.classList.toggle('off', !originalEnabled);
+                        pillEl.textContent = originalEnabled ? 'AKTİF' : 'PASİF';
+                    }
+                }
+            } catch (err) {
+                console.error('setGlobalNodeEnabled exception:', err);
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    showToast(`Bağlantı hatası: ${err.message}`, 'error');
+                }
+                checkboxEl.checked = originalEnabled;
+                if (pillEl) {
+                    pillEl.classList.toggle('ok', originalEnabled);
+                    pillEl.classList.toggle('off', !originalEnabled);
+                    pillEl.textContent = originalEnabled ? 'AKTİF' : 'PASİF';
+                }
+            } finally {
+                checkboxEl.disabled = false;
+            }
+        }
+
+        function renderLoadBalancingRoutes() {
+            const container = document.getElementById('lb-routes');
+            if (!cachedRoutes || cachedRoutes.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-muted)">Endpoint bulunamadı</div>';
+                return;
+            }
+
+            const rows = cachedRoutes
+                .filter(r => (r.Key || r.key))
+                .slice(0, 200);
+
+            // Store expanded states before re-render
+            const expandedStates = {};
+            rows.forEach(r => {
+                const key = r.Key || r.key;
+                const body = document.getElementById(`lb-route-body-${key}`);
+                if (body) {
+                    expandedStates[key] = body.classList.contains('expanded');
+                }
+            });
+
+            container.innerHTML = rows.map(r => {
+                const key = r.Key || r.key;
+                const path = r.UpstreamPathTemplate || r.upstreamPathTemplate || '';
+                const isExpanded = expandedStates[key] === true;
+                return `
+                    <div class="card" style="margin-bottom: 10px;">
+                        <div class="card-header" onclick="toggleLbRoute('${key}')">
+                            <h3 style="font-size:14px">
+                                🔧 <span style="font-family: monospace">${key}</span>
+                                <span style="margin-left:10px;color:var(--text-muted);font-weight:400;font-size:12px">${path}</span>
+                            </h3>
+                            <span class="expand-icon" style="${isExpanded ? 'transform: rotate(90deg)' : ''}">▶</span>
+                        </div>
+                        <div class="card-body ${isExpanded ? 'expanded' : ''}" id="lb-route-body-${key}" style="padding: 12px 16px; ${isExpanded ? 'display: block' : ''}">
+                            ${renderRouteNodeToggles(key)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleLbRoute(routeKey) {
+            const body = document.getElementById(`lb-route-body-${routeKey}`);
+            if (!body) return;
+            body.classList.toggle('expanded');
+            body.style.display = body.classList.contains('expanded') ? 'block' : 'none';
+        }
+
+        function renderRouteNodeToggles(routeKey) {
+            const legacyNodes = cachedNodes ? (cachedNodes.Legacy || cachedNodes.legacy || []) : [];
+            const newNodes = cachedNodes ? (cachedNodes.New || cachedNodes.new || []) : [];
+
+            const state = cachedRouteStates[routeKey] || { Legacy: [], New: [] };
+            const disabledLegacy = new Set((state.Legacy || []).map(x => (x || '').toLowerCase()));
+            const disabledNew = new Set((state.New || []).map(x => (x || '').toLowerCase()));
+
+            const renderGroup = (label, target, nodes, disabledSet) => {
+                const items = nodes.map(n => {
+                    const id = n.Id || n.id || '';
+                    const enabledGlobal = n.Enabled ?? n.enabled ?? false;
+                    const isDisabledRoute = disabledSet.has(id.toLowerCase());
+                    const effective = enabledGlobal && !isDisabledRoute;
+                    const checkboxDisabled = !enabledGlobal;
+                    const nodeStatus = getNodeStatus(target, id);
+                    
+                    // Dot logic: Show purely probe result (Server Health), not administrative state.
+                    const dotReady = nodeStatus.ready === true;
+                    const dotHint = nodeStatus.hint || 'Durum bilinmiyor';
+                    const dot = renderStatusDotHtml(dotReady, dotHint);
+
+                    const checkboxTitle = checkboxDisabled
+                        ? 'Global kapalı olduğu için endpoint bazlı değiştirilemez'
+                        : (isDisabledRoute ? 'Endpoint bazlı kapalı' : 'Endpoint bazlı açık');
+                    return `
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px dashed var(--border)">
+                            <div style="display:flex;flex-direction:column">
+                                <span style="display:inline-flex;align-items:center;gap:8px">
+                                    ${dot}
+                                    <span style="font-family: monospace; font-size: 12px;">${id}</span>
+                                </span>
+                                <span style="font-size: 11px; color: var(--text-muted); font-family: monospace;">${n.BaseUrl || n.baseUrl || ''}</span>
+                            </div>
+                            <div class="toggle">
+                                <input type="checkbox"
+                                       ${effective ? 'checked' : ''}
+                                       ${checkboxDisabled ? 'disabled' : ''}
+                                       title="${checkboxTitle.replace(/"/g, '&quot;')}"
+                                       onchange="setRouteNodeEnabled('${routeKey}', '${target}', '${id}', this.checked, this)" />
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-weight:700;margin-bottom:6px">${label}</div>
+                        <div style="border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:#fff">${items || '<div style="color:var(--text-muted)">Sunucu yok</div>'}</div>
+                    </div>
+                `;
+            };
+
+            return `
+                ${renderGroup('LEGACY', 'Legacy', legacyNodes, disabledLegacy)}
+                ${renderGroup('NEW', 'New', newNodes, disabledNew)}
+            `;
+        }
+
+        async function setRouteNodeEnabled(routeKey, target, nodeId, enabled, checkboxEl) {
+            if (checkboxEl) {
+                checkboxEl.disabled = true;
+            }
+            
+            const originalChecked = !enabled; // Original state before click
+            
+            try {
+                const targetKey = target.charAt(0).toUpperCase() + target.slice(1).toLowerCase();
+                
+                console.log(`setRouteNodeEnabled: routeKey=${routeKey}, target=${targetKey}, nodeId=${nodeId}, enabled=${enabled}`);
+                console.log('Sending PUT request to:', `${API_BASE}/routes/${encodeURIComponent(routeKey)}/nodes`);
+                console.log('Request body:', JSON.stringify({ target: targetKey, nodeId, enabled }));
+
+                const res = await apiFetch(`${API_BASE}/routes/${encodeURIComponent(routeKey)}/nodes`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target: targetKey, nodeId, enabled })
+                });
+
+                console.log('Response status:', res.status);
+
+                if (res.ok) {
+                    const result = await res.json();
+                    console.log('setRouteNodeEnabled success:', result);
+                    
+                    showToast(`Endpoint ${routeKey}: ${nodeId} sunucusu ${enabled ? 'açıldı' : 'kapandı'}`, 'success');
+                    
+                    // Simple reload - just refresh the entire data and view
+                    await loadData();
+                } else {
+                    const error = await res.text();
+                    console.error('setRouteNodeEnabled failed:', res.status, error);
+                    showToast(`Hata: ${error}`, 'error');
+                    if (checkboxEl) {
+                        checkboxEl.checked = originalChecked;
+                    }
+                }
+            } catch (err) {
+                console.error('setRouteNodeEnabled exception:', err);
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    showToast(`Bağlantı hatası: ${err.message}`, 'error');
+                }
+                if (checkboxEl) {
+                    checkboxEl.checked = originalChecked;
+                }
+            } finally {
+                if (checkboxEl) {
+                    checkboxEl.disabled = false;
+                }
+            }
+        }
+        
+        async function loadHealth() {
+            try {
+                const res = await apiFetch(`${API_BASE}/health`);
+                const data = await res.json();
+                
+                document.getElementById('system-status').textContent = data.Durum || data.durum || 'Bilinmiyor';
+                document.getElementById('default-target').textContent = data.VarsayilanHedef || data.varsayilanHedef || '-';
+            } catch (err) {
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    document.getElementById('system-status').textContent = 'Hata';
+                    console.error('Health check failed:', err);
+                }
+            }
+        }
+        
+        async function loadModules() {
+            const container = document.getElementById('modules-container');
+            
+            try {
+                const res = await apiFetch(`${API_BASE}/modules`);
+                const data = await res.json();
+                
+                document.getElementById('module-count').textContent = data.ToplamModul || data.toplamModul || 0;
+                document.getElementById('endpoint-count').textContent = data.ToplamEndpoint || data.toplamEndpoint || 0;
+                
+                const modules = data.Moduller || data.moduller || [];
+                
+                if (modules.length === 0) {
+                    container.innerHTML = '<p style="padding: 24px; text-align: center; color: var(--text-muted);">Modül bulunamadı</p>';
+                    return;
+                }
+                
+                container.innerHTML = modules.map(m => createModuleCard(m)).join('');
+                
+            } catch (err) {
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    container.innerHTML = `<p style="padding: 24px; color: var(--danger);">Yükleme hatası: ${err.message}</p>`;
+                    console.error('Load modules failed:', err);
+                }
+            }
+        }
+        
+        function createModuleCard(module) {
+            // Case-insensitive property access
+            const pct = module.NewPercentage ?? module.newPercentage ?? 0;
+            const code = module.Code || module.code || '';
+            const name = module.Name || module.name || code;
+            const desc = module.Description || module.description || '';
+            const endpointCount = module.EndpointCount ?? module.endpointCount ?? 0;
+            const routes = module.Routes || module.routes || [];
+            
+            let targetClass = 'legacy';
+            let targetText = '%0 Yeni (Legacy)';
+            let targetIcon = '⬅️';
+            
+            if (pct === 100) {
+                targetClass = 'new';
+                targetText = '%100 Yeni';
+                targetIcon = '➡️';
+            } else if (pct > 0) {
+                targetClass = 'split';
+                targetText = `%${pct} Yeni / %${100-pct} Legacy`;
+                targetIcon = '↔️';
+            }
+            
+            return `
+                <div class="card" data-module="${code}">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <h3>
+                            📦 ${name}
+                            <span class="module-code">${code}</span>
+                            <span class="endpoint-count">(${endpointCount || routes.length} endpoint)</span>
+                        </h3>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <span class="target-badge ${targetClass}">
+                                ${targetIcon} ${targetText}
+                            </span>
+                            <span class="expand-icon">▶</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        ${desc ? `<p style="padding: 12px 16px; color: var(--text-muted); font-size: 13px; border-bottom: 1px solid var(--border);">${desc}</p>` : ''}
+                        
+                        <!-- Yüzde Kontrolü -->
+                        <div class="percentage-control">
+                            <div class="percentage-slider">
+                                <span style="font-size: 12px; color: var(--legacy); font-weight: 600;">Legacy</span>
+                                <input type="range" min="0" max="100" step="5" value="${pct}" 
+                                       id="slider-${code}" 
+                                       onchange="updateModulePercentage('${code}', this.value)"
+                                       oninput="updateSliderDisplay('${code}', this.value)">
+                                <span style="font-size: 12px; color: var(--new); font-weight: 600;">Yeni</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <span style="font-size: 14px; font-weight: 700;">%</span>
+                                <input type="number" 
+                                       id="pct-input-${code}" 
+                                       value="${pct}" 
+                                       min="0" max="100"
+                                       style="width: 85px; padding: 6px 10px; border: 2px solid var(--border); border-radius: 6px; font-size: 16px; font-weight: 700; text-align: center;"
+                                       onchange="setModulePercentageFromInput('${code}', this.value)"
+                                       oninput="syncSliderFromInput('${code}', this.value)">
+                            </div>
+                            <div class="quick-buttons">
+                                <button class="quick-btn legacy-btn" onclick="setModulePercentage('${code}', 0)">Legacy</button>
+                                <button class="quick-btn" onclick="setModulePercentage('${code}', 50)">50/50</button>
+                                <button class="quick-btn new-btn" onclick="setModulePercentage('${code}', 100)">Yeni</button>
+                            </div>
+                        </div>
+                        
+                        <table class="route-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">Metot</th>
+                                    <th style="width: 55%;">Yol Eşleştirme</th>
+                                    <th style="width: 15%;">Modül Oranı</th>
+                                    <th style="width: 20%;">Endpoint Özelleştirme</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${routes.map((r, idx) => createRouteRow(r, code, pct, idx)).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createRouteRow(route, moduleCode, modulePct, idx) {
+            // Case-insensitive property access
+            const methods = route.HttpMethods || route.httpMethods || ['GET'];
+            const legacyPath = route.LegacyPath || route.legacyPath || '-';
+            const newPath = route.NewPath || route.newPath || '-';
+            const routeKey = route.Key || route.key || '';
+            const override = route.OverridePercentage ?? route.overridePercentage ?? null;
+            const effectivePct = override !== null ? override : modulePct;
+            
+            const targetClass = effectivePct === 100 ? 'new' : effectivePct > 0 ? 'split' : 'legacy';
+            const targetText = effectivePct === 100 ? 'Yeni' : effectivePct > 0 ? `${effectivePct}%` : 'Legacy';
+            
+            const routeId = `${moduleCode}-${idx}`;
+            const escapedPath = legacyPath.replace(/'/g, "\\'");
+            
+            // Hangi buton aktif?
+            const isModule = override === null;
+            const isLegacy = override === 0;
+            const isSplit = override !== null && override > 0 && override < 100;
+            const isNew = override === 100;
+            
+            const nodesRow = routeKey ? `
+                <tr style="background:#fafafa">
+                    <td colspan="4" style="padding: 12px 16px;">
+                        <details>
+                            <summary style="cursor:pointer;font-weight:700">Sunucular (Endpoint Bazlı Aç/Kapa)</summary>
+                            <div style="margin-top:10px">
+                                ${renderRouteNodeToggles(routeKey)}
+                            </div>
+                        </details>
+                    </td>
+                </tr>
+            ` : '';
+
+            return `
+                <tr data-route="${routeId}">
+                    <td>
+                        ${routeKey ? `<div style="margin-bottom:6px">${renderEndpointDotsHtml(routeKey)}</div>` : ''}
+                        <div class="method-badges">
+                            ${methods.map(m => `<span class="method-badge ${m.toLowerCase()}">${m}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td class="path-cell">
+                        <div class="path-legacy">
+                            <span class="path-label legacy">ESKİ</span>
+                            ${legacyPath}
+                        </div>
+                        <div class="path-new">
+                            <span class="path-label new">YENİ</span>
+                            ${newPath}
+                        </div>
+                    </td>
+                    <td class="route-target-cell">
+                        <span class="target-indicator ${targetClass}" id="target-${routeId}">
+                            → ${targetText}
+                        </span>
+                    </td>
+                    <td class="route-override">
+                        <div class="override-controls">
+                            <button class="override-btn module ${isModule ? 'active' : ''}" 
+                                    onclick="setRouteOverrideBtn('${moduleCode}', '${escapedPath}', null, this)"
+                                    title="Modül oranını kullan (%${modulePct})">M</button>
+                            <button class="override-btn legacy ${isLegacy ? 'active' : ''}" 
+                                    onclick="setRouteOverrideBtn('${moduleCode}', '${escapedPath}', 0, this)"
+                                    title="Legacy sisteme yönlendir">L</button>
+                            <button class="override-btn split ${isSplit ? 'active' : ''}" 
+                                    onclick="setRouteOverrideBtn('${moduleCode}', '${escapedPath}', 50, this)"
+                                    title="50/50 bölünmüş trafik">50</button>
+                            <button class="override-btn new ${isNew ? 'active' : ''}" 
+                                    onclick="setRouteOverrideBtn('${moduleCode}', '${escapedPath}', 100, this)"
+                                    title="Yeni sisteme yönlendir">Y</button>
+                            <input type="number" class="override-input" 
+                                   id="input-${routeId}" 
+                                   value="${override !== null ? override : ''}" 
+                                   placeholder="%"
+                                   min="0" max="100"
+                                   onchange="setRouteOverrideInput('${moduleCode}', '${escapedPath}', this.value)"
+                                   title="Manuel yüzde girin (0-100)">
+                        </div>
+                    </td>
+                </tr>
+                ${nodesRow}
+            `;
+        }
+        
+        function toggleCard(header) {
+            const card = header.parentElement;
+            const body = card.querySelector('.card-body');
+            const icon = card.querySelector('.expand-icon');
+            const isExpanded = body.classList.contains('expanded');
+            
+            if (isExpanded) {
+                body.classList.remove('expanded');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                body.classList.add('expanded');
+                icon.style.transform = 'rotate(90deg)';
+            }
+        }
+        
+        async function emergencyRollback() {
+            if (!confirm('DİKKAT: Tüm trafiği hemen Legacy sisteme yönlendirmek istediğinize emin misiniz?')) return;
+            
+            try {
+                const res = await apiFetch(`${API_BASE}/emergency/rollback`, { method: 'POST' });
+                if (res.ok) {
+                    showToast('Tüm trafik Legacy sisteme yönlendirildi', 'success');
+                    setTimeout(() => loadData(), 1000);
+                } else {
+                    const error = await res.text();
+                    showToast(`Hata: ${error}`, 'error');
+                }
+            } catch (err) {
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    showToast(`Bağlantı hatası: ${err.message}`, 'error');
+                }
+            }
+        }
+        
+        // Slider görüntüsünü güncelle (anlık)
+        function updateSliderDisplay(moduleCode, value) {
+            const input = document.getElementById(`pct-input-${moduleCode}`);
+            if (input) {
+                input.value = value;
+                input.style.borderColor = value == 100 ? 'var(--new)' : value > 0 ? 'var(--split)' : 'var(--legacy)';
+            }
+        }
+        
+        // Input'tan slider'ı senkronize et
+        function syncSliderFromInput(moduleCode, value) {
+            const slider = document.getElementById(`slider-${moduleCode}`);
+            if (slider && value >= 0 && value <= 100) {
+                slider.value = value;
+            }
+        }
+        
+        // Input'tan modül yüzdesini ayarla
+        async function setModulePercentageFromInput(moduleCode, value) {
+            const pct = parseInt(value);
+            if (isNaN(pct) || pct < 0 || pct > 100) {
+                showToast('Yüzde 0-100 arasında olmalıdır', 'error');
+                return;
+            }
+            await setModulePercentage(moduleCode, pct);
+        }
+        
+        // Modül yüzdesini güncelle
+        async function updateModulePercentage(moduleCode, value) {
+            await setModulePercentage(moduleCode, parseInt(value));
+        }
+        
+        // Modül yüzdesini ayarla
+        async function setModulePercentage(moduleCode, percentage) {
+            try {
+                const res = await apiFetch(`${API_BASE}/modules/${moduleCode}/percentage`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ percentage: percentage })
+                });
+                
+                if (res.ok) {
+                    // Slider'ı güncelle
+                    const slider = document.getElementById(`slider-${moduleCode}`);
+                    if (slider) slider.value = percentage;
+                    
+                    // Input'u güncelle
+                    const input = document.getElementById(`pct-input-${moduleCode}`);
+                    if (input) {
+                        input.value = percentage;
+                        input.style.borderColor = percentage == 100 ? 'var(--new)' : percentage > 0 ? 'var(--split)' : 'var(--legacy)';
+                    }
+                    
+                    const targetText = percentage === 100 ? 'Yeni sisteme' : percentage === 0 ? 'Legacy sisteme' : `%${percentage} yeni sisteme`;
+                    showToast(`${moduleCode} modülü ${targetText} yönlendirildi`, 'success');
+                    
+                    // 1.5 saniye sonra sayfayı yenile
+                    setTimeout(() => loadData(), 1500);
+                } else {
+                    const error = await res.text();
+                    showToast(`Hata: ${error}`, 'error');
+                }
+            } catch (err) {
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    showToast(`Bağlantı hatası: ${err.message}`, 'error');
+                }
+            }
+        }
+        
+        // Endpoint override ayarla (butonla)
+        async function setRouteOverrideBtn(moduleCode, path, percentage, btn) {
+            // Aktif butonu güncelle
+            const row = btn.closest('tr');
+            row.querySelectorAll('.override-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Input'u güncelle
+            const input = row.querySelector('.override-input');
+            if (input) {
+                input.value = percentage !== null ? percentage : '';
+            }
+            
+            await setRouteOverride(moduleCode, path, percentage);
+        }
+        
+        // Endpoint override ayarla (inputla)
+        async function setRouteOverrideInput(moduleCode, path, value) {
+            const percentage = value === '' ? null : parseInt(value);
+            
+            if (percentage !== null && (percentage < 0 || percentage > 100)) {
+                showToast('Yüzde 0-100 arasında olmalıdır', 'error');
+                return;
+            }
+            
+            await setRouteOverride(moduleCode, path, percentage);
+        }
+        
+        // Endpoint override ayarla (ana fonksiyon)
+        async function setRouteOverride(moduleCode, path, percentage) {
+            try {
+                const res = await apiFetch(`${API_BASE}/routes/override`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        moduleCode: moduleCode,
+                        path: path,
+                        percentage: percentage 
+                    })
+                });
+                
+                if (res.ok) {
+                    const msg = percentage === null 
+                        ? `Modül oranına döndürüldü` 
+                        : `%${percentage} olarak ayarlandı`;
+                    showToast(msg, 'success');
+                    
+                    // Sayfayı yenileme - sadece toast göster
+                    // setTimeout(() => loadData(), 1000);
+                } else {
+                    const error = await res.text();
+                    showToast(`Hata: ${error}`, 'error');
+                }
+            } catch (err) {
+                if (err.message !== 'Unauthorized' && err.message !== 'No API key') {
+                    showToast(`Bağlantı hatası: ${err.message}`, 'error');
+                }
+            }
+        }
+        
+        // Toast bildirimi göster
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

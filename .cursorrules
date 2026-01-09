@@ -1,0 +1,44 @@
+## Architecture & Code Rules (SOLID + Clean Architecture + Onion)
+
+### Core principles
+- **SOLID** is mandatory for all new and modified code.
+- Architecture axis is **Clean Architecture / Onion**:
+  - **Domain**: pure business rules/entities. No framework, no IO, no infrastructure dependencies.
+  - **Application**: use-cases, orchestration, ports (interfaces). Depends on Domain, not on Infrastructure.
+  - **Infrastructure**: adapters/implementations (cache, logging, persistence, external services). Depends on Application.
+  - **Gateway (API)**: composition root + HTTP concerns. Depends on Application/Infrastructure only through abstractions.
+- **Dependency direction** must always point inward (Infrastructure → Application → Domain).
+
+### Code quality rules
+- Prefer small, single-purpose classes and methods.
+- Avoid hidden side effects. If a method does IO, name it accordingly and keep it at the edges.
+- Use descriptive names; avoid magic numbers; validate inputs.
+
+### Testing rules (mandatory)
+- **Every method must have unit tests**:
+  - For non-IO pure logic: unit test with deterministic assertions.
+  - For HTTP pipeline/middleware/controllers: use integration-style tests (TestServer / WebApplicationFactory).
+- **Any new method or modified method requires tests in the same change**.
+- **Definition of Done**:
+  - Tests added/updated
+  - `dotnet test` is green
+
+### Documentation rules (mandatory)
+- Keep **Developer Guide** up to date on every code change:
+  - `DeveloperGuide.md`
+  - `DeveloperGuide.html`
+
+### Security rules (mandatory)
+- **Security-first**: security impact is considered for every change.
+- **Input validation**: validate and sanitize all external inputs (HTTP, headers, query, config, external services). Prefer allow-lists.
+- **AuthN/AuthZ**: enforce authentication and authorization on every protected endpoint; deny-by-default. No hidden bypasses.
+- **Secrets**: never commit secrets; read secrets from secure providers (env/secret store). Do not log secrets/tokens/credentials.
+- **PII/logging**: treat request/response data as sensitive; log minimum necessary, mask sensitive fields, prevent log injection.
+- **Crypto**: use approved .NET primitives; no custom crypto. Use strong hashing (BCrypt/PBKDF2/Argon2) for passwords; use constant-time comparisons where needed.
+- **SSRF/outbound**: validate outbound URLs/hosts; prevent SSRF (no arbitrary user-controlled URL fetch).
+- **File/path safety**: validate paths; prevent path traversal; never trust file names from user input.
+- **Dependencies**: keep dependencies vetted; avoid introducing insecure packages; security warnings must be addressed if change-related.
+- **Definition of Done (security)**:
+  - Security considerations documented (what can go wrong, how mitigated)
+  - Tests cover security-relevant branches for changed/new methods
+

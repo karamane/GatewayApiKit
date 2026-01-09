@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ApiGatewayKit.Core.Domain</RootNamespace>
+    <AssemblyName>ApiGatewayKit.Core.Domain</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ApiGatewayKit.Core.Shared\ApiGatewayKit.Core.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
+
