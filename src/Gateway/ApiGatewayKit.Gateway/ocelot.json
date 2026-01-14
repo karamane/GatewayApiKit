@@ -3150,7 +3150,6 @@
       "RouteIsCaseSensitive": false,
       "Priority": 10,
       "Metadata": {
-        "NewSystemPercentage": 0,
         "DisabledNodes": {
           "New": [
             "new-1"
@@ -3184,9 +3183,7 @@
       ],
       "RouteIsCaseSensitive": false,
       "Priority": 10,
-      "Metadata": {
-        "NewSystemPercentage": 85
-      },
+      "Metadata": {},
       "Timeout": 2000,
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 5,
@@ -3214,13 +3211,13 @@
       "RouteIsCaseSensitive": false,
       "Priority": 10,
       "Metadata": {
-        "NewSystemPercentage": 75,
         "DisabledNodes": {
           "New": [
             "new-1"
           ],
           "Legacy": []
-        }
+        },
+        "NewSystemPercentage": 100
       },
       "Timeout": 2000,
       "QoSOptions": {
@@ -3248,9 +3245,7 @@
       ],
       "RouteIsCaseSensitive": false,
       "Priority": 10,
-      "Metadata": {
-        "NewSystemPercentage": 0
-      },
+      "Metadata": {},
       "Timeout": 2000,
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 5,
@@ -3277,9 +3272,7 @@
       ],
       "RouteIsCaseSensitive": false,
       "Priority": 10,
-      "Metadata": {
-        "NewSystemPercentage": 100
-      },
+      "Metadata": {},
       "Timeout": 2000,
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 5,
@@ -3307,7 +3300,6 @@
       "RouteIsCaseSensitive": false,
       "Priority": 10,
       "Metadata": {
-        "NewSystemPercentage": 100,
         "DisabledNodes": {
           "New": [],
           "Legacy": []
@@ -3339,9 +3331,7 @@
       ],
       "RouteIsCaseSensitive": false,
       "Priority": 10,
-      "Metadata": {
-        "NewSystemPercentage": 100
-      },
+      "Metadata": {},
       "Timeout": 2000,
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 5,
@@ -3697,7 +3687,7 @@
         {
           "Name": "Percentage",
           "Parameters": {
-            "Value": 70
+            "Value": 50
           }
         }
       ]

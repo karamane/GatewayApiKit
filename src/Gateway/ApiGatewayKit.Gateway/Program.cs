@@ -224,7 +224,7 @@ try {
 finally { Log.CloseAndFlush(); }
 
 static void PrintStartupBanner(WebApplication app) {
-    var server = app.Services.GetService<IServer>();
+    var server = app.Services.GetService<Microsoft.AspNetCore.Hosting.Server.IServer>();
     var addresses = server?.Features.Get<IServerAddressesFeature>()?.Addresses ?? new List<string>();
     var urls = addresses.Count > 0 ? string.Join(", ", addresses) : "N/A";
     var appName = app.Configuration["Logging:ApplicationName"] ?? "ApiGatewayKit.Gateway";

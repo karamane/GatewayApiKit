@@ -64,6 +64,7 @@
     <!-- Security -->
     <PackageVersion Include="HtmlSanitizer" Version="8.1.870" />
     <PackageVersion Include="AspNetCoreRateLimit" Version="5.0.0" />
+    <PackageVersion Include="AspNetCoreRateLimit.Redis" Version="2.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
     <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.0.2" />
