@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Yük Testi Kılavuzu</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+
+        h3 {
+            color: #2980b9;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        code {
+            background-color: #f1f3f5;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #2d3436;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Gateway Yük Testi Kılavuzu</h1>
+
+    <p>Bu kılavuz, <a href="https://k6.io/">k6</a> kullanarak Gateway üzerinde performans ve güvenlik testlerinin nasıl
+        çalıştırılacağını açıklar.</p>
+
+    <h2>Ön Gereksinimler</h2>
+    <ol>
+        <li><strong>k6 Kurulumu</strong>:
+            <ul>
+                <li><strong>Windows (Winget):</strong> <code>winget install k6</code></li>
+                <li><strong>Chocolatey:</strong> <code>choco install k6</code></li>
+                <li><strong>İndirme:</strong> <a href="https://k6.io/docs/get-started/installation/">Resmi k6
+                        Kurulumu</a></li>
+            </ul>
+        </li>
+        <li><strong>Gateway Çalışır Durumda Olmalı</strong>: <code>ApiGatewayKit.Gateway</code> projesinin
+            <code>http://localhost:53000</code> adresinde çalıştığından emin olun.</li>
+    </ol>
+
+    <h2>Test Scriptleri Konumu</h2>
+    <p>Tüm test scriptleri projenin <code>tests/</code> klasöründe bulunur.</p>
+    <ul>
+        <li><code>tests/gateway-load-test.js</code>: Token Flood & Yük testi için ana script.</li>
+    </ul>
+
+    <h2>Doğrulanmış Testler Nasıl Çalıştırılır</h2>
+
+    <h3>1. Token Flood Saldırısı (Rate Limit Doğrulama)</h3>
+    <p>Bu senaryo, tek bir kullanıcının (tek bir JWT token kullanarak) izin verilenden daha hızlı istek göndermesini
+        simüle eder.</p>
+
+    <strong>Komut:</strong>
+    <pre>k6 run tests/gateway-load-test.js</pre>
+
+    <strong>Beklenen Çıktı:</strong>
+    <ul>
+        <li><code>throttled_requests</code> sayacının arttığını görmelisiniz.</li>
+        <li><code>http_req_failed</code> oranı yüksek olabilir (bu iyidir, 429 hatalarının alındığını gösterir).</li>
+        <li>Konsol loglarında "Status 429" görülebilir.</li>
+    </ul>
+
+    <h3>2. Testi Özelleştirme</h3>
+    <p><code>tests/gateway-load-test.js</code> dosyasını açarak şunları değiştirebilirsiniz:</p>
+    <ul>
+        <li><strong><code>VUS</code></strong>: Sanal Kullanıcı sayısı (Eşzamanlılık).</li>
+        <li><strong><code>DURATION</code></strong>: Testin ne kadar süreceği.</li>
+        <li><strong><code>TOKEN</code></strong>: Kimlik doğrulama için kullanılan JWT token (geçerli olduğundan ve
+            süresinin dolmadığından emin olun).</li>
+        <li><strong>Payload</strong>: POST isteklerinde gönderilen JSON gövdesi.</li>
+    </ul>
+
+    <h2>Sonuçları Yorumlama</h2>
+
+    <table>
+        <tr>
+            <th>Metrik</th>
+            <th>Anlamı</th>
+            <th>İdeal Değer</th>
+        </tr>
+        <tr>
+            <td><code>throttled_requests</code></td>
+            <td>429 yanıtlarının sayısı</td>
+            <td><strong>> 0</strong> (Limit testi yapılıyorsa)</td>
+        </tr>
+        <tr>
+            <td><code>http_req_duration</code></td>
+            <td>Gecikme (Yanıt süresi)</td>
+            <td><strong>
+                    < 2000ms</strong> (p95)</td>
+        </tr>
+        <tr>
+            <td><code>checks_succeeded</code></td>
+            <td>Backend'e iletilen istekler</td>
+            <td>Limite bağlıdır</td>
+        </tr>
+    </table>
+
+    <h2>Sorun Giderme</h2>
+    <ul>
+        <li><strong>Hepsi 401 mi?</strong> Script içindeki JWT token süresinin dolup dolmadığını kontrol edin.</li>
+        <li><strong>Hepsi 404 mü?</strong> Script içindeki <code>BASE_URL</code> ile <code>ocelot.json</code> yollarının
+            eşleştiğini kontrol edin.
+        <li><strong>Bağlantı Reddedildi (Connection Refused)?</strong> Gateway'in <code>53000</code> portunda
+            çalıştığından emin olun.</li>
+    </ul>
+
+</body>
+
+</html>

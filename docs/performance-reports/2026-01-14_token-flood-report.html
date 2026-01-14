@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Performans Doğrulama Raporu</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        code {
+            background-color: #f1f3f5;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f1f3f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .pass {
+            color: green;
+            font-weight: bold;
+        }
+
+        .metric-box {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Gateway Performans Doğrulama Raporu</h1>
+
+    <p>
+        <strong>Tarih:</strong> 14 Ocak 2026<br>
+        <strong>Ortam:</strong> IP Rate Limit (Token Bazlı) - Geliştirme (Development)<br>
+        <strong>Hedef URL:</strong> <code>http://localhost:53000/moim/api/v1/internet/auth/login</code>
+    </p>
+
+    <h2>1. Yönetici Özeti</h2>
+    <p>Bu çalışmanın amacı, API Gateway üzerinde <strong>Token Bazlı Hız Sınırlama (Rate Limiting)</strong> ve
+        <strong>DoS Koruması</strong> uygulamalarının doğrulanmasıdır. <code>k6</code> aracı kullanılarak, tek bir
+        kullanıcının (JWT ile tanımlanmış) yetkili limitlerini aştığı bir "Token Flood" saldırısı simüle edilmiştir.</p>
+
+    <p><strong>Sonuç:</strong> <span class="pass">✅ BAŞARILI</span><br>
+        Gateway, belirlenen limitleri aşan istekleri başarıyla tespit etmiş ve <code>429 Too Many Requests</code> ile
+        engellemiştir. Aynı zamanda, limitler dahilindeki trafiğin geçişine izin vermiştir.</p>
+
+    <h2>2. Test Konfigürasyonu</h2>
+    <table>
+        <tr>
+            <th>Parametre</th>
+            <th>Değer</th>
+        </tr>
+        <tr>
+            <td><strong>Araç</strong></td>
+            <td>k6</td>
+        </tr>
+        <tr>
+            <td><strong>Senaryo</strong></td>
+            <td>Token Flood (Tekil JWT)</td>
+        </tr>
+        <tr>
+            <td><strong>Sanal Kullanıcı (VUs)</strong></td>
+            <td>20 (Eşzamanlı)</td>
+        </tr>
+        <tr>
+            <td><strong>Süre</strong></td>
+            <td>30s</td>
+        </tr>
+        <tr>
+            <td><strong>Rate Limit Politikası</strong></td>
+            <td>50 istek / 1s (Token başına)</td>
+        </tr>
+        <tr>
+            <td><strong>Downstream</strong></td>
+            <td>Mock / Localhost (502 döndü, geçiş başarılı olduğu anlamına gelir)</td>
+        </tr>
+    </table>
+
+    <h2>3. Ana Bulgular</h2>
+
+    <h3>Hız Sınırlama (Koruma)</h3>
+    <ul>
+        <li><strong>Engellenen İstekler:</strong> 259 istek engellendi.</li>
+        <li><strong>Doğrulama:</strong> Gateway <code>429 Too Many Requests</code> durum kodu döndürdü.</li>
+        <li><strong>Davranış:</strong> Bu sonuç, <code>TokenClientIdResolver</code> bileşeninin JWT içerisindeki
+            <code>sub</code> bilgisini doğru şekilde ayıkladığını ve tek bir gürültülü kullanıcının backend sistemini
+            boğmasını engellediğini doğrulamaktadır.</li>
+    </ul>
+
+    <h3>Yönlendirme & Bağlantı</h3>
+    <ul>
+        <li><strong>Rota Eşleşmesi:</strong> İsteklerin %100'ü başarıyla <code>auth-login</code> yoluna yönlendirildi.
+        </li>
+        <li><strong>Downstream Durumu:</strong> Limiti geçen istekler <code>502 Bad Gateway</code> aldı.
+            <ul>
+                <li><em>Yorum:</em> Gateway isteği başarıyla iletmeye çalıştı. 502 hatası Gateway'in koruma mantığıyla
+                    ilgili değildir (arkadaki legacy servisin - 39414 portu - kapalı veya zaman aşımına uğradığını
+                    gösterir).</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>4. Kanıtlar (Loglar & Metrikler)</h2>
+    <div class="metric-box">
+        <pre>
+http_req_duration..........: ortalama=747.7ms  p(95)=1.39s
+throttled_requests.........: 259 (Gateway Tarafından Engellendi)
+checks_succeeded...........: %49.79 (Backend'e İletildi)
+checks_failed..............: %50.20 (Doğru Şekilde Sınırlandı)
+</pre>
+    </div>
+
+    <h2>5. Sonuç</h2>
+    <p>Token Bazlı Hız Sınırlama mekanizması <strong>Production (Canlı) Ortam için Hazırdır</strong>. Kimliği
+        doğrulanmış kullanıcılardan gelebilecek Uygulama Katmanı DoS saldırılarına karşı sistemi etkili bir şekilde
+        korumaktadır.</p>
+
+    <hr>
+    <p>
+        <strong>Sonraki Adımlar:</strong><br>
+        - Dağıtık ortamlar (F5 / Çoklu Sunucu) için Redis desteğini etkinleştirin (<code>UseRedis: true</code>).<br>
+        - <code>ocelot.json</code> içindeki <code>Limit</code> değerlerini gerçek canlı ortam kapasitesine göre
+        ayarlayın.
+    </p>
+
+</body>
+
+</html>

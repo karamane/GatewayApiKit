@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
+    <PackageReference Include="Ocelot.Provider.Polly" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Polly.Extensions.Http" />
     <PackageReference Include="Serilog.AspNetCore" />
@@ -21,6 +22,8 @@
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
     <!-- Performance: Rate Limiting & Response Compression -->
     <PackageReference Include="AspNetCoreRateLimit" />
+    <PackageReference Include="AspNetCoreRateLimit.Redis" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 
   <ItemGroup>

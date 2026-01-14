@@ -1,0 +1,91 @@
+{
+  "hash": "399accb7",
+  "configHash": "ba9d8d86",
+  "lockfileHash": "6c12c93f",
+  "browserHash": "0f0eff3b",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "9684c5bc",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "7322f9b0",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "fe74ca3a",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "035cb72e",
+      "needsInterop": false
+    },
+    "@tanstack/react-query": {
+      "src": "../../node_modules/@tanstack/react-query/build/modern/index.js",
+      "file": "@tanstack_react-query.js",
+      "fileHash": "0191e700",
+      "needsInterop": false
+    },
+    "antd": {
+      "src": "../../node_modules/antd/es/index.js",
+      "file": "antd.js",
+      "fileHash": "5c941c09",
+      "needsInterop": false
+    },
+    "antd/locale/tr_TR": {
+      "src": "../../node_modules/antd/locale/tr_TR.js",
+      "file": "antd_locale_tr_TR.js",
+      "fileHash": "ad90f4b7",
+      "needsInterop": true
+    },
+    "dayjs": {
+      "src": "../../node_modules/dayjs/dayjs.min.js",
+      "file": "dayjs.js",
+      "fileHash": "c1e14153",
+      "needsInterop": true
+    },
+    "dayjs/locale/tr": {
+      "src": "../../node_modules/dayjs/locale/tr.js",
+      "file": "dayjs_locale_tr.js",
+      "fileHash": "d2945e2c",
+      "needsInterop": true
+    },
+    "@ant-design/icons": {
+      "src": "../../node_modules/@ant-design/icons/es/index.js",
+      "file": "@ant-design_icons.js",
+      "fileHash": "aa3f4d1a",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "331b1267",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-OVTO2MQF": {
+      "file": "chunk-OVTO2MQF.js"
+    },
+    "chunk-I2MCD6RR": {
+      "file": "chunk-I2MCD6RR.js"
+    },
+    "chunk-E55NSNTN": {
+      "file": "chunk-E55NSNTN.js"
+    },
+    "chunk-XSJDEQSM": {
+      "file": "chunk-XSJDEQSM.js"
+    },
+    "chunk-4MBMRILA": {
+      "file": "chunk-4MBMRILA.js"
+    }
+  }
+}

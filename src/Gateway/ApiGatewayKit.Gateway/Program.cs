@@ -1,23 +1,30 @@
-using System.IO.Compression;
-using System.Net;
-using AspNetCoreRateLimit;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.FeatureManagement;
+using ApiGatewayKit.Core.Application.Interfaces.Routing;
 using ApiGatewayKit.Gateway.Configuration;
 using ApiGatewayKit.Gateway.Handlers;
 using ApiGatewayKit.Gateway.Security;
 using ApiGatewayKit.Gateway.Services;
 using ApiGatewayKit.Gateway.Services.DownstreamHealth;
 using ApiGatewayKit.Infrastructure.Logging.Extensions;
-using ApiGatewayKit.Core.Application.Interfaces.Routing;
+using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.FeatureManagement;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ocelot.Provider.Polly;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Timeout;
 using Serilog;
+using System.IO.Compression;
+using System.Net;
+using System.Threading.RateLimiting; 
+using ApiGatewayKit.Gateway.Middleware;
+using ApiGatewayKit.Gateway.Security.RateLimiting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
+using StackExchange.Redis;
 
 ThreadPool.SetMinThreads(100, 100);
 
@@ -63,7 +70,11 @@ builder.Services.AddSingleton<IRouteConfigurationService, RouteConfigurationServ
 
 ConfigureHttpClients(builder.Services, builder.Configuration);
 
-builder.Services.AddOcelot(builder.Configuration).AddDelegatingHandler<FeatureRoutingHandler>(global: true);
+builder.Services
+    .AddOcelot(builder.Configuration)
+    .AddPolly()
+    .AddDelegatingHandler<FeatureRoutingHandler>(global: true);
+
 builder.Services.AddTransient<FeatureRoutingHandler>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
@@ -83,12 +94,74 @@ builder.Services.AddCors(opt => opt.AddPolicy("AdminPanel", p => p
 builder.Services.AddHealthChecks();
 builder.Services.AddResponseCompression(opt => { opt.EnableForHttps = true; opt.Providers.Add<BrotliCompressionProvider>(); opt.Providers.Add<GzipCompressionProvider>(); });
 builder.Services.AddMemoryCache();
+// 1. Concurrency Limiter (Global Fail-Fast)
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetConcurrencyLimiter(
+            partitionKey: "GlobalConcurrency",
+            factory: partition => new ConcurrencyLimiterOptions
+            {
+                PermitLimit = 1000, 
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            }));
+    
+    options.OnRejected = async (context, token) => {
+        context.HttpContext.Response.StatusCode = 503;
+        await context.HttpContext.Response.WriteAsync("Service Unavailable (Concurrency Limit Reached)", token);
+    };
+});
+
+// 2. Token/Quota Rate Limiting (AspNetCoreRateLimit)
 builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+
+// Decide Store: Redis vs Memory
+var useRedis = builder.Configuration.GetValue<bool>("RateLimitOptions:UseRedis");
+if (useRedis)
+{
+    var redisConn = builder.Configuration.GetConnectionString("Redis");
+    if (string.IsNullOrEmpty(redisConn)) throw new Exception("Redis connection string is missing.");
+    
+    // Register Redis
+    var multiplexer = ConnectionMultiplexer.Connect(redisConn);
+    builder.Services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+    // Use Distributed Stores (provided by AspNetCoreRateLimit.Redis or standard IDistributedCache adapters)
+    // Note: AspNetCoreRateLimit recently supports Redis directly via extensions or via IDistributedCache
+    // For this context, assuming we use the IDistributedCache implementation or specific Redis stores.
+    // We will register DistributedCacheIpPolicyStore which uses IDistributedCache.
+    builder.Services.AddStackExchangeRedisCache(options => options.Configuration = redisConn);
+    builder.Services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
+    builder.Services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+    builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>(); 
+}
+else
+{
+    builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+    builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+    builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>(); 
+}
+
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-builder.Services.AddInMemoryRateLimiting();
+// Register the Custom Token Resolver
+builder.Services.AddSingleton<IClientResolveContributor, TokenClientIdResolver>();
+
+// 3. Authentication (Required for Token Parsing)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    // Minimal config to allow parsing without strict signature check (assuming F5 handles it or keys provided later)
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = false, // Check expiration if needed
+        SignatureValidator = (token, parameters) => new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(token)
+    };
+});
 
 var app = builder.Build();
 
@@ -96,7 +169,10 @@ var app = builder.Build();
 ModuleDefinitions.Initialize(app.Services.GetRequiredService<IModuleDefinitionsProvider>());
 
 app.UseResponseCompression();
-app.UseIpRateLimiting();
+app.UseMiddleware<GatewayLoggingMiddleware>(); // Custom Structured Logging
+app.UseRateLimiter(); // Concurrency
+app.UseAuthentication();
+app.UseIpRateLimiting(); // Token/Quota Throttling
 app.UseLogging();
 app.UseSerilogRequestLogging();
 
@@ -198,6 +274,12 @@ static void ConfigureHttpClients(IServiceCollection services, IConfiguration con
     services.AddHttpClient("LegacyTarget", c => { c.BaseAddress = new Uri(legacyUrl); c.Timeout = Timeout.InfiniteTimeSpan; })
             .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(120));
             
+    services.AddHttpClient("NewTarget", c => { c.BaseAddress = new Uri(newUrl); c.Timeout = Timeout.InfiniteTimeSpan; })
+            .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(120));
+    
+    services.AddHttpClient("NewTarget", c => { c.BaseAddress = new Uri(legacyUrl); c.Timeout = Timeout.InfiniteTimeSpan; })
+           .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(120));
+
     services.AddHttpClient("NewTarget", c => { c.BaseAddress = new Uri(newUrl); c.Timeout = Timeout.InfiniteTimeSpan; })
             .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(120));
 }
