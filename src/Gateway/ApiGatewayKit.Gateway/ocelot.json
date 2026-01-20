@@ -3217,7 +3217,7 @@
           ],
           "Legacy": []
         },
-        "NewSystemPercentage": 100
+        "NewSystemPercentage": 25
       },
       "Timeout": 2000,
       "QoSOptions": {
@@ -3687,7 +3687,7 @@
         {
           "Name": "Percentage",
           "Parameters": {
-            "Value": 50
+            "Value": 60
           }
         }
       ]

@@ -15,7 +15,7 @@
         {
           "Id": "new-1",
           "BaseUrl": "https://localhost:52201",
-          "Enabled": false,
+          "Enabled": true,
           "Weight": 100
         },
         {
